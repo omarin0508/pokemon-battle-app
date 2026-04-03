@@ -148,33 +148,35 @@ export function renderOpponentError(message = "Opponent not found.") {
 
 export function renderBattlePlaceholder() {
   document.getElementById("battle-result").innerHTML = `
-    <p>Choose an opponent and press Fight.</p>
+    <p>Choose an opponent and press Start Battle.</p>
   `;
 }
 
-export function renderBattleResult(result) {
+export function renderBattleResultFromBattle(battle) {
   const battleResult = document.getElementById("battle-result");
 
-  const winnerLabel =
-    result.winner === "player"
-      ? "Winner: Your Pokémon"
-      : result.winner === "opponent"
-      ? "Winner: Opponent"
-      : "Result: Draw";
+  let title = "Battle in progress";
+
+  if (battle.finished) {
+    title =
+      battle.winner === "player"
+        ? "Winner: Your Pokémon"
+        : battle.winner === "opponent"
+        ? "Winner: Opponent"
+        : "Result: Draw";
+  }
 
   battleResult.innerHTML = `
     <div class="battle-result-content">
-      <h3>${winnerLabel}</h3>
-      <p>${result.message}</p>
-
+      <h3>${title}</h3>
       <div class="battle-score">
         <div class="battle-score-row">
-          <span>${result.player.name.toUpperCase()}</span>
-          <strong>${result.player.remainingHp} HP</strong>
+          <span>${battle.player.name.toUpperCase()}</span>
+          <strong>${battle.player.currentHp} HP</strong>
         </div>
         <div class="battle-score-row">
-          <span>${result.opponent.name.toUpperCase()}</span>
-          <strong>${result.opponent.remainingHp} HP</strong>
+          <span>${battle.opponent.name.toUpperCase()}</span>
+          <strong>${battle.opponent.currentHp} HP</strong>
         </div>
       </div>
     </div>

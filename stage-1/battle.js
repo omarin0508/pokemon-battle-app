@@ -16,87 +16,97 @@ function calculateDamage(attackerStats, defenderStats) {
   return Math.max(8, rawDamage);
 }
 
-export function simulateBattle(player, opponent) {
+export function createBattle(player, opponent) {
   const playerStats = getBattleStats(player);
   const opponentStats = getBattleStats(opponent);
 
-  let playerCurrentHp = playerStats.hp;
-  let opponentCurrentHp = opponentStats.hp;
-
-  const log = [];
-
-  const playerName = player.name.toUpperCase();
-  const opponentName = opponent.name.toUpperCase();
-
-  let firstAttacker = "player";
-  if (opponentStats.speed > playerStats.speed) {
-    firstAttacker = "opponent";
-  }
-
-  log.push(
-    firstAttacker === "player"
-      ? `${playerName} attacks first because it is faster.`
-      : `${opponentName} attacks first because it is faster.`
-  );
-
-  let turn = 1;
-
-  while (playerCurrentHp > 0 && opponentCurrentHp > 0 && turn <= 20) {
-    log.push(`Turn ${turn}`);
-
-    if (firstAttacker === "player") {
-      const damageToOpponent = calculateDamage(playerStats, opponentStats);
-      opponentCurrentHp = Math.max(0, opponentCurrentHp - damageToOpponent);
-      log.push(`${playerName} attacks and deals ${damageToOpponent} damage.`);
-      log.push(`${opponentName} has ${opponentCurrentHp} HP left.`);
-
-      if (opponentCurrentHp <= 0) break;
-
-      const damageToPlayer = calculateDamage(opponentStats, playerStats);
-      playerCurrentHp = Math.max(0, playerCurrentHp - damageToPlayer);
-      log.push(`${opponentName} attacks and deals ${damageToPlayer} damage.`);
-      log.push(`${playerName} has ${playerCurrentHp} HP left.`);
-    } else {
-      const damageToPlayer = calculateDamage(opponentStats, playerStats);
-      playerCurrentHp = Math.max(0, playerCurrentHp - damageToPlayer);
-      log.push(`${opponentName} attacks and deals ${damageToPlayer} damage.`);
-      log.push(`${playerName} has ${playerCurrentHp} HP left.`);
-
-      if (playerCurrentHp <= 0) break;
-
-      const damageToOpponent = calculateDamage(playerStats, opponentStats);
-      opponentCurrentHp = Math.max(0, opponentCurrentHp - damageToOpponent);
-      log.push(`${playerName} attacks and deals ${damageToOpponent} damage.`);
-      log.push(`${opponentName} has ${opponentCurrentHp} HP left.`);
-    }
-
-    turn++;
-  }
-
-  let winner = "draw";
-  let message = "The battle ends in a draw.";
-
-  if (playerCurrentHp > opponentCurrentHp) {
-    winner = "player";
-    message = `${playerName} wins the battle!`;
-  } else if (opponentCurrentHp > playerCurrentHp) {
-    winner = "opponent";
-    message = `${opponentName} wins the battle!`;
-  }
-
-  return {
-    winner,
-    message,
-    log,
+  const battle = {
     player: {
       name: player.name,
       stats: playerStats,
-      remainingHp: playerCurrentHp,
+      currentHp: playerStats.hp,
     },
     opponent: {
       name: opponent.name,
       stats: opponentStats,
-      remainingHp: opponentCurrentHp,
+      currentHp: opponentStats.hp,
     },
+    turn: 1,
+    log: [],
+    finished: false,
+    winner: null,
   };
+
+  battle.first =
+    opponentStats.speed > playerStats.speed ? "opponent" : "player";
+
+  battle.log.push(
+    battle.first === "player"
+      ? `${battle.player.name.toUpperCase()} attacks first because it is faster.`
+      : `${battle.opponent.name.toUpperCase()} attacks first because it is faster.`
+  );
+
+  return battle;
+}
+
+export function nextTurn(battle) {
+  if (!battle || battle.finished) return battle;
+
+  const log = [];
+
+  function attack(attacker, defender) {
+    const damage = calculateDamage(attacker.stats, defender.stats);
+    defender.currentHp = Math.max(0, defender.currentHp - damage);
+
+    log.push(
+      `${attacker.name.toUpperCase()} attacks and deals ${damage} damage. ${defender.name.toUpperCase()} has ${defender.currentHp} HP left.`
+    );
+  }
+
+  log.push(`Turn ${battle.turn}`);
+
+  const playerGoesFirst = battle.first === "player";
+
+  if (playerGoesFirst) {
+    attack(battle.player, battle.opponent);
+
+    if (battle.opponent.currentHp <= 0) {
+      battle.finished = true;
+      battle.winner = "player";
+    } else {
+      attack(battle.opponent, battle.player);
+
+      if (battle.player.currentHp <= 0) {
+        battle.finished = true;
+        battle.winner = "opponent";
+      }
+    }
+  } else {
+    attack(battle.opponent, battle.player);
+
+    if (battle.player.currentHp <= 0) {
+      battle.finished = true;
+      battle.winner = "opponent";
+    } else {
+      attack(battle.player, battle.opponent);
+
+      if (battle.opponent.currentHp <= 0) {
+        battle.finished = true;
+        battle.winner = "player";
+      }
+    }
+  }
+
+  if (
+    battle.player.currentHp === 0 &&
+    battle.opponent.currentHp === 0
+  ) {
+    battle.finished = true;
+    battle.winner = "draw";
+  }
+
+  battle.log.push(...log);
+  battle.turn++;
+
+  return battle;
 }

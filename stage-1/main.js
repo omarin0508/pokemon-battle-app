@@ -1,5 +1,5 @@
 import { fetchPokemon } from "./api.js";
-import { simulateBattle } from "./battle.js";
+import { createBattle, nextTurn } from "./battle.js";
 import {
   saveLastOpponent,
   getLastOpponent,
@@ -15,7 +15,7 @@ import {
   renderPlayerError,
   renderOpponentError,
   renderBattlePlaceholder,
-  renderBattleResult,
+  renderBattleResultFromBattle,
   renderBattleLog,
   renderBattleLogPlaceholder,
 } from "./render.js";
@@ -25,6 +25,8 @@ const state = {
   player: null,
   opponent: null,
 };
+
+let currentBattle = null;
 
 async function loadTrainerConfig() {
   const module = await import("../trainer.config.js");
@@ -40,6 +42,7 @@ async function loadOpponentByName(name, { updateInput = false } = {}) {
     renderOpponentLoading();
     renderBattlePlaceholder();
     renderBattleLogPlaceholder();
+    currentBattle = null;
 
     const pokemon = await fetchPokemon(name);
     state.opponent = pokemon;
@@ -53,6 +56,7 @@ async function loadOpponentByName(name, { updateInput = false } = {}) {
   } catch (error) {
     console.error(error);
     state.opponent = null;
+    currentBattle = null;
     renderOpponentError("That Pokémon does not exist.");
     renderBattlePlaceholder();
     renderBattleLogPlaceholder();
@@ -91,6 +95,7 @@ async function searchOpponent() {
 
   if (!value) {
     state.opponent = null;
+    currentBattle = null;
     renderOpponentError("Please type a Pokémon name.");
     renderBattlePlaceholder();
     renderBattleLogPlaceholder();
@@ -103,15 +108,33 @@ async function searchOpponent() {
 function fightBattle() {
   if (!state.player || !state.opponent) {
     document.getElementById("battle-result").innerHTML = `
-      <p>You need both Pokémon ready before fighting.</p>
+      <p>You need both Pokémon ready before starting the battle.</p>
     `;
     renderBattleLogPlaceholder();
     return;
   }
 
-  const result = simulateBattle(state.player, state.opponent);
-  renderBattleResult(result);
-  renderBattleLog(result.log);
+  currentBattle = createBattle(state.player, state.opponent);
+  renderBattleResultFromBattle(currentBattle);
+  renderBattleLog(currentBattle.log);
+}
+
+function handleNextTurn() {
+  if (!currentBattle) {
+    document.getElementById("battle-result").innerHTML = `
+      <p>Press Start Battle first.</p>
+    `;
+    return;
+  }
+
+  if (currentBattle.finished) {
+    renderBattleResultFromBattle(currentBattle);
+    return;
+  }
+
+  currentBattle = nextTurn(currentBattle);
+  renderBattleResultFromBattle(currentBattle);
+  renderBattleLog(currentBattle.log);
 }
 
 function resetBattle() {
@@ -119,6 +142,7 @@ function resetBattle() {
   input.value = "";
 
   state.opponent = null;
+  currentBattle = null;
   clearLastOpponent();
   renderOpponentPlaceholder();
   renderBattlePlaceholder();
@@ -134,6 +158,7 @@ document.getElementById("opponent-input").addEventListener("keydown", (event) =>
 });
 
 document.getElementById("fight-btn").addEventListener("click", fightBattle);
+document.getElementById("next-turn-btn").addEventListener("click", handleNextTurn);
 document.getElementById("reset-btn").addEventListener("click", resetBattle);
 
 init();
