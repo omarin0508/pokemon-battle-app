@@ -1,9 +1,9 @@
 function getPokemonStats(pokemon) {
   return {
-    hp: pokemon.stats.find((s) => s.stat.name === "hp")?.base_stat ?? "N/A",
-    attack: pokemon.stats.find((s) => s.stat.name === "attack")?.base_stat ?? "N/A",
-    defense: pokemon.stats.find((s) => s.stat.name === "defense")?.base_stat ?? "N/A",
-    speed: pokemon.stats.find((s) => s.stat.name === "speed")?.base_stat ?? "N/A",
+    hp: pokemon.stats.find((s) => s.stat.name === "hp")?.base_stat ?? 0,
+    attack: pokemon.stats.find((s) => s.stat.name === "attack")?.base_stat ?? 0,
+    defense: pokemon.stats.find((s) => s.stat.name === "defense")?.base_stat ?? 0,
+    speed: pokemon.stats.find((s) => s.stat.name === "speed")?.base_stat ?? 0,
   };
 }
 
@@ -15,11 +15,17 @@ function getPokemonImage(pokemon) {
   );
 }
 
+function getHpPercent(hp) {
+  const maxVisualHp = 255;
+  return Math.max(5, Math.min(100, (hp / maxVisualHp) * 100));
+}
+
 function createPokemonCard(pokemon, label = "Pokémon") {
   const types = pokemon.types.map((t) => t.type.name).join(", ");
   const moves = pokemon.moves.slice(0, 4).map((m) => m.move.name);
   const stats = getPokemonStats(pokemon);
   const image = getPokemonImage(pokemon);
+  const hpPercent = getHpPercent(stats.hp);
 
   return `
     <article class="pokemon-card">
@@ -29,6 +35,16 @@ function createPokemonCard(pokemon, label = "Pokémon") {
           <h3 class="pokemon-name">${pokemon.name}</h3>
         </div>
         <div class="pokemon-types">${types}</div>
+      </div>
+
+      <div class="hp-block">
+        <div class="hp-label-row">
+          <span>HP</span>
+          <strong>${stats.hp}</strong>
+        </div>
+        <div class="hp-bar">
+          <div class="hp-fill" style="width: ${hpPercent}%"></div>
+        </div>
       </div>
 
       <div class="pokemon-image-wrap">

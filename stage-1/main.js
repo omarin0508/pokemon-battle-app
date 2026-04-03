@@ -1,6 +1,11 @@
 import { fetchPokemon } from "./api.js";
 import { calculateBattleResult } from "./battle.js";
 import {
+  saveLastOpponent,
+  getLastOpponent,
+  clearLastOpponent,
+} from "./storage.js";
+import {
   renderTrainerCard,
   renderPlayerPokemon,
   renderOpponentPokemon,
@@ -24,6 +29,32 @@ async function loadTrainerConfig() {
   return module.default || module.trainerConfig || module;
 }
 
+async function loadOpponentByName(name, { updateInput = false } = {}) {
+  if (!name) return;
+
+  const input = document.getElementById("opponent-input");
+
+  try {
+    renderOpponentLoading();
+    renderBattlePlaceholder();
+
+    const pokemon = await fetchPokemon(name);
+    state.opponent = pokemon;
+
+    renderOpponentPokemon(state.opponent);
+    saveLastOpponent(state.opponent.name);
+
+    if (updateInput) {
+      input.value = state.opponent.name;
+    }
+  } catch (error) {
+    console.error(error);
+    state.opponent = null;
+    renderOpponentError("That Pokémon does not exist.");
+    renderBattlePlaceholder();
+  }
+}
+
 async function init() {
   try {
     const trainerConfig = await loadTrainerConfig();
@@ -38,6 +69,11 @@ async function init() {
     state.player = favoritePokemon;
 
     renderPlayerPokemon(state.player);
+
+    const lastOpponent = getLastOpponent();
+    if (lastOpponent) {
+      await loadOpponentByName(lastOpponent, { updateInput: true });
+    }
   } catch (error) {
     console.error(error);
     renderPlayerError("Could not load trainer or favorite Pokémon.");
@@ -55,20 +91,7 @@ async function searchOpponent() {
     return;
   }
 
-  try {
-    renderOpponentLoading();
-    renderBattlePlaceholder();
-
-    const pokemon = await fetchPokemon(value);
-    state.opponent = pokemon;
-
-    renderOpponentPokemon(state.opponent);
-  } catch (error) {
-    console.error(error);
-    state.opponent = null;
-    renderOpponentError("That Pokémon does not exist.");
-    renderBattlePlaceholder();
-  }
+  await loadOpponentByName(value);
 }
 
 function fightBattle() {
@@ -84,6 +107,12 @@ function fightBattle() {
 }
 
 function resetBattle() {
+  const input = document.getElementById("opponent-input");
+  input.value = "";
+
+  state.opponent = null;
+  clearLastOpponent();
+  renderOpponentPlaceholder();
   renderBattlePlaceholder();
 }
 
