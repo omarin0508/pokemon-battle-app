@@ -170,12 +170,38 @@ export function renderBattleResult(result) {
       <div class="battle-score">
         <div class="battle-score-row">
           <span>${result.player.name.toUpperCase()}</span>
-          <strong>${result.player.score}</strong>
+          <strong>${result.player.remainingHp} HP</strong>
         </div>
         <div class="battle-score-row">
           <span>${result.opponent.name.toUpperCase()}</span>
-          <strong>${result.opponent.score}</strong>
+          <strong>${result.opponent.remainingHp} HP</strong>
         </div>
+      </div>
+    </div>
+  `;
+}
+
+export function renderBattleLog(logEntries) {
+  const battleLog = document.getElementById("battle-log");
+
+  battleLog.innerHTML = `
+    <div class="battle-log-content">
+      <h3>Battle Log</h3>
+      <div class="battle-log-list">
+        ${logEntries.map((entry) => `<p>${entry}</p>`).join("")}
+      </div>
+    </div>
+  `;
+}
+
+export function renderBattleLogPlaceholder() {
+  const battleLog = document.getElementById("battle-log");
+
+  battleLog.innerHTML = `
+    <div class="battle-log-content">
+      <h3>Battle Log</h3>
+      <div class="battle-log-list">
+        <p>The turn-by-turn battle log will appear here.</p>
       </div>
     </div>
   `;

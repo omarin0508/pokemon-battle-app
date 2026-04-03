@@ -1,5 +1,5 @@
 import { fetchPokemon } from "./api.js";
-import { calculateBattleResult } from "./battle.js";
+import { simulateBattle } from "./battle.js";
 import {
   saveLastOpponent,
   getLastOpponent,
@@ -16,6 +16,8 @@ import {
   renderOpponentError,
   renderBattlePlaceholder,
   renderBattleResult,
+  renderBattleLog,
+  renderBattleLogPlaceholder,
 } from "./render.js";
 
 const state = {
@@ -37,6 +39,7 @@ async function loadOpponentByName(name, { updateInput = false } = {}) {
   try {
     renderOpponentLoading();
     renderBattlePlaceholder();
+    renderBattleLogPlaceholder();
 
     const pokemon = await fetchPokemon(name);
     state.opponent = pokemon;
@@ -52,6 +55,7 @@ async function loadOpponentByName(name, { updateInput = false } = {}) {
     state.opponent = null;
     renderOpponentError("That Pokémon does not exist.");
     renderBattlePlaceholder();
+    renderBattleLogPlaceholder();
   }
 }
 
@@ -63,6 +67,7 @@ async function init() {
     renderTrainerCard(state.trainer);
     renderOpponentPlaceholder();
     renderBattlePlaceholder();
+    renderBattleLogPlaceholder();
     renderPlayerLoading();
 
     const favoritePokemon = await fetchPokemon(state.trainer.favoritePokemon);
@@ -88,6 +93,7 @@ async function searchOpponent() {
     state.opponent = null;
     renderOpponentError("Please type a Pokémon name.");
     renderBattlePlaceholder();
+    renderBattleLogPlaceholder();
     return;
   }
 
@@ -99,11 +105,13 @@ function fightBattle() {
     document.getElementById("battle-result").innerHTML = `
       <p>You need both Pokémon ready before fighting.</p>
     `;
+    renderBattleLogPlaceholder();
     return;
   }
 
-  const result = calculateBattleResult(state.player, state.opponent);
+  const result = simulateBattle(state.player, state.opponent);
   renderBattleResult(result);
+  renderBattleLog(result.log);
 }
 
 function resetBattle() {
@@ -114,6 +122,7 @@ function resetBattle() {
   clearLastOpponent();
   renderOpponentPlaceholder();
   renderBattlePlaceholder();
+  renderBattleLogPlaceholder();
 }
 
 document.getElementById("search-btn").addEventListener("click", searchOpponent);
