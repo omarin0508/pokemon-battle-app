@@ -1,71 +1,375 @@
-body {
-  font-family: Arial, sans-serif;
-  padding: 20px;
-  background: #f4f4f4;
-  color: #222;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-main {
-  max-width: 900px;
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(180deg, #f5f7fb 0%, #e9eef8 100%);
+  color: #1f2937;
+  min-height: 100vh;
+  padding: 24px;
+}
+
+.app {
+  max-width: 1280px;
   margin: 0 auto;
 }
 
-h1 {
-  font-size: 3rem;
+/* =========================
+   TRAINER + SEARCH
+========================= */
+
+.trainer-panel {
+  display: grid;
+  gap: 16px;
   margin-bottom: 24px;
 }
 
-section {
+#trainer-card {
   background: white;
-  padding: 22px;
-  margin-bottom: 20px;
-  border-radius: 16px;
+  border-radius: 18px;
+  padding: 18px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
-.search-section input {
-  padding: 10px 12px;
-  font-size: 16px;
-  width: 260px;
-  max-width: 100%;
-  margin-right: 10px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+.trainer-info {
+  display: grid;
+  gap: 8px;
 }
 
-.search-section button {
-  padding: 10px 16px;
+.trainer-info h2 {
+  font-size: 24px;
+  line-height: 1.2;
+}
+
+.trainer-info p {
+  color: #475569;
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+/* =========================
+   SEARCH
+========================= */
+
+.search-box {
+  display: flex;
+  gap: 10px;
+  flex-wrap: nowrap;
+  align-items: center;
+  position: relative;
+  z-index: 10;
+}
+
+.search-box input {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
   font-size: 16px;
-  cursor: pointer;
+  outline: none;
+  background: white;
+  position: relative;
+  z-index: 11;
+}
+
+.search-box input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.search-box button {
+  padding: 12px 18px;
   border: none;
-  border-radius: 8px;
-  background: #222;
+  border-radius: 12px;
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.search-box button:hover {
+  background: #1d4ed8;
+}
+
+/* =========================
+   BATTLE ARENA
+========================= */
+
+.battle-arena {
+  display: grid;
+  grid-template-columns: minmax(320px, 1fr) 180px minmax(320px, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.battle-slot {
+  min-height: 420px;
+  background: white;
+  border-radius: 24px;
+  padding: 20px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
+  min-width: 0;
+}
+
+/* =========================
+   CENTER (VS + ACTIONS)
+========================= */
+
+.battle-center {
+  display: grid;
+  gap: 18px;
+  justify-items: center;
+  align-self: start;
+  width: 100%;
+}
+
+.vs-badge {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 24px;
+  font-weight: 900;
+  color: white;
+  background: radial-gradient(circle, #ef4444 0%, #b91c1c 100%);
+  box-shadow: 0 8px 18px rgba(185, 28, 28, 0.35);
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+.battle-actions {
+  display: grid;
+  gap: 10px;
+  width: 140px;
+}
+
+.fight-btn,
+.reset-btn {
+  border: none;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-weight: 800;
+  cursor: pointer;
+  font-size: 15px;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.fight-btn {
+  background: #16a34a;
   color: white;
 }
 
-.search-section button:hover {
-  opacity: 0.9;
+.reset-btn {
+  background: #334155;
+  color: white;
 }
 
-img {
-  width: 170px;
-  image-rendering: pixelated;
+.fight-btn:hover,
+.reset-btn:hover {
+  transform: translateY(-1px);
+  opacity: 0.95;
 }
 
-.pokemon-card h3 {
-  margin-top: 0;
-  font-size: 2rem;
+/* =========================
+   RESULT PANEL
+========================= */
+
+.battle-result {
+  width: 100%;
+  max-width: 220px;
+  min-height: 140px;
+  background: white;
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  display: grid;
+  place-items: center;
 }
 
-.pokemon-card p {
-  font-size: 1.1rem;
-  line-height: 1.5;
+.battle-result-content {
+  display: grid;
+  gap: 12px;
+  width: 100%;
 }
 
-.error-text {
-  color: #b00020;
-  font-weight: bold;
+.battle-result-content h3 {
+  font-size: 18px;
 }
 
-.muted-text {
-  color: #666;
+.battle-result-content p {
+  font-size: 14px;
+  color: #475569;
+}
+
+.battle-score {
+  display: grid;
+  gap: 10px;
+}
+
+.battle-score-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+/* =========================
+   POKEMON CARD
+========================= */
+
+.pokemon-card {
+  display: grid;
+  gap: 14px;
+}
+
+.pokemon-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.pokemon-name {
+  font-size: 22px;
+  font-weight: 800;
+  text-transform: uppercase;
+  line-height: 1.1;
+}
+
+.pokemon-types {
+  font-size: 14px;
+  color: #475569;
+  text-align: right;
+}
+
+.pokemon-image-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  background: #f8fafc;
+  border-radius: 18px;
+  padding: 12px;
+}
+
+.pokemon-image {
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+  max-width: 100%;
+}
+
+.pokemon-section {
+  background: #f8fafc;
+  border-radius: 16px;
+  padding: 14px;
+}
+
+.pokemon-section h4 {
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.moves-list,
+.stats-list {
+  display: grid;
+  gap: 8px;
+}
+
+.move-row,
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  background: white;
+  border-radius: 10px;
+  padding: 8px 10px;
+}
+
+.move-row strong,
+.stat-row strong {
+  text-align: right;
+  word-break: break-word;
+}
+
+/* =========================
+   STATES
+========================= */
+
+.placeholder-card,
+.error-card,
+.loading-card {
+  min-height: 100%;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  border: 2px dashed #cbd5e1;
+  border-radius: 20px;
+  padding: 24px;
+  color: #64748b;
+  background: #f8fafc;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 1100px) {
+  .battle-arena {
+    grid-template-columns: 1fr;
+  }
+
+  .battle-center {
+    order: -1;
+    margin-bottom: 12px;
+  }
+
+  .battle-actions {
+    width: 100%;
+    max-width: 220px;
+  }
+
+  .battle-result {
+    width: 100%;
+    max-width: 320px;
+  }
+}
+
+@media (max-width: 640px) {
+  body {
+    padding: 16px;
+  }
+
+  .search-box {
+    flex-wrap: wrap;
+  }
+
+  .search-box button {
+    width: 100%;
+  }
+
+  .battle-slot {
+    padding: 16px;
+  }
+
+  .pokemon-name {
+    font-size: 20px;
+  }
+
+  .pokemon-image {
+    width: 170px;
+    height: 170px;
+  }
 }

@@ -3,29 +3,43 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Stage 1 - Trainer Card</title>
+  <title>Pokémon Battle</title>
   <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
-  <main>
-    <h1>Stage 1 - Trainer Card</h1>
+  <main class="app">
+    <section class="trainer-panel">
+      <div id="trainer-card"></div>
 
-    <section id="trainer-card"></section>
-
-    <section id="player-pokemon"></section>
-
-    <section class="search-section">
-      <h2>Buscar oponente</h2>
-      <input
-        type="text"
-        id="opponent-input"
-        placeholder="Nombre del Pokémon"
-        autocomplete="off"
-      />
-      <button id="search-btn">Buscar</button>
+      <div class="search-box">
+        <input
+          type="text"
+          id="opponent-input"
+          placeholder="Search opponent Pokémon..."
+          autocomplete="off"
+        />
+        <button id="search-btn" type="button">Search</button>
+      </div>
     </section>
 
-    <section id="opponent-pokemon"></section>
+    <section class="battle-arena">
+      <div id="player-slot" class="battle-slot"></div>
+
+      <div class="battle-center">
+        <div class="vs-badge">VS</div>
+
+        <div class="battle-actions">
+          <button id="fight-btn" class="fight-btn" type="button">Fight</button>
+          <button id="reset-btn" class="reset-btn" type="button">Reset</button>
+        </div>
+
+        <div id="battle-result" class="battle-result">
+          <p>Choose an opponent and press Fight.</p>
+        </div>
+      </div>
+
+      <div id="opponent-slot" class="battle-slot"></div>
+    </section>
   </main>
 
   <script type="module" src="./main.js"></script>

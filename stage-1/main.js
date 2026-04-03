@@ -1,86 +1,101 @@
-import TRAINER from "../trainer.config.js";
-import { fetchPokemonByName } from "./api.js";
-import { render } from "./render.js";
+import { fetchPokemon } from "./api.js";
+import { calculateBattleResult } from "./battle.js";
+import {
+  renderTrainerCard,
+  renderPlayerPokemon,
+  renderOpponentPokemon,
+  renderPlayerLoading,
+  renderOpponentLoading,
+  renderOpponentPlaceholder,
+  renderPlayerError,
+  renderOpponentError,
+  renderBattlePlaceholder,
+  renderBattleResult,
+} from "./render.js";
 
 const state = {
-  trainer: TRAINER,
-
-  playerPokemon: null,
-  playerLoading: false,
-  playerError: "",
-
-  opponentPokemon: null,
-  opponentLoading: false,
-  opponentError: ""
+  trainer: null,
+  player: null,
+  opponent: null,
 };
 
-async function loadFavoritePokemon() {
-  state.playerLoading = true;
-  state.playerError = "";
-  render(state);
+async function loadTrainerConfig() {
+  const module = await import("../trainer.config.js");
+  return module.default || module.trainerConfig || module;
+}
 
+async function init() {
   try {
-    const data = await fetchPokemonByName(state.trainer.favoritePokemon);
-    state.playerPokemon = data;
+    const trainerConfig = await loadTrainerConfig();
+    state.trainer = trainerConfig;
+
+    renderTrainerCard(state.trainer);
+    renderOpponentPlaceholder();
+    renderBattlePlaceholder();
+    renderPlayerLoading();
+
+    const favoritePokemon = await fetchPokemon(state.trainer.favoritePokemon);
+    state.player = favoritePokemon;
+
+    renderPlayerPokemon(state.player);
   } catch (error) {
-    state.playerError = error.message;
-  } finally {
-    state.playerLoading = false;
-    render(state);
+    console.error(error);
+    renderPlayerError("Could not load trainer or favorite Pokémon.");
   }
 }
 
-async function loadOpponentPokemon(name) {
-  state.opponentLoading = true;
-  state.opponentError = "";
-  state.opponentPokemon = null;
-  render(state);
+async function searchOpponent() {
+  const input = document.getElementById("opponent-input");
+  const value = input.value.trim();
+
+  if (!value) {
+    state.opponent = null;
+    renderOpponentError("Please type a Pokémon name.");
+    renderBattlePlaceholder();
+    return;
+  }
 
   try {
-    const data = await fetchPokemonByName(name);
-    state.opponentPokemon = data;
+    renderOpponentLoading();
+    renderBattlePlaceholder();
+
+    const pokemon = await fetchPokemon(value);
+    state.opponent = pokemon;
+
+    renderOpponentPokemon(state.opponent);
   } catch (error) {
-    state.opponentError = error.message;
-  } finally {
-    state.opponentLoading = false;
-    render(state);
+    console.error(error);
+    state.opponent = null;
+    renderOpponentError("That Pokémon does not exist.");
+    renderBattlePlaceholder();
   }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  render(state);
-  loadFavoritePokemon();
+function fightBattle() {
+  if (!state.player || !state.opponent) {
+    document.getElementById("battle-result").innerHTML = `
+      <p>You need both Pokémon ready before fighting.</p>
+    `;
+    return;
+  }
 
-  const searchBtn = document.querySelector("#search-btn");
-  const opponentInput = document.querySelector("#opponent-input");
+  const result = calculateBattleResult(state.player, state.opponent);
+  renderBattleResult(result);
+}
 
-  searchBtn.addEventListener("click", () => {
-    const name = opponentInput.value.trim();
+function resetBattle() {
+  renderBattlePlaceholder();
+}
 
-    if (!name) {
-      state.opponentError = "Escribe un nombre de Pokémon.";
-      state.opponentPokemon = null;
-      state.opponentLoading = false;
-      render(state);
-      return;
-    }
+document.getElementById("search-btn").addEventListener("click", searchOpponent);
 
-    loadOpponentPokemon(name);
-  });
-
-  opponentInput.addEventListener("keydown", (event) => {
-    if (event.key === "Enter") {
-      const name = opponentInput.value.trim();
-
-      if (!name) {
-        state.opponentError = "Escribe un nombre de Pokémon.";
-        state.opponentPokemon = null;
-        state.opponentLoading = false;
-        render(state);
-        return;
-      }
-
-      loadOpponentPokemon(name);
-    }
-  });
+document.getElementById("opponent-input").addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    searchOpponent();
+  }
 });
+
+document.getElementById("fight-btn").addEventListener("click", fightBattle);
+document.getElementById("reset-btn").addEventListener("click", resetBattle);
+
+init();

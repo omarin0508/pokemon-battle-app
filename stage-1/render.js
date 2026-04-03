@@ -1,69 +1,166 @@
 function getPokemonStats(pokemon) {
   return {
-    hp: pokemon.stats.find((stat) => stat.stat.name === "hp")?.base_stat ?? "N/A",
-    attack: pokemon.stats.find((stat) => stat.stat.name === "attack")?.base_stat ?? "N/A",
-    defense: pokemon.stats.find((stat) => stat.stat.name === "defense")?.base_stat ?? "N/A",
-    speed: pokemon.stats.find((stat) => stat.stat.name === "speed")?.base_stat ?? "N/A"
+    hp: pokemon.stats.find((s) => s.stat.name === "hp")?.base_stat ?? "N/A",
+    attack: pokemon.stats.find((s) => s.stat.name === "attack")?.base_stat ?? "N/A",
+    defense: pokemon.stats.find((s) => s.stat.name === "defense")?.base_stat ?? "N/A",
+    speed: pokemon.stats.find((s) => s.stat.name === "speed")?.base_stat ?? "N/A",
   };
 }
 
-function renderPokemonCard(pokemon) {
-  const types = pokemon.types.map((t) => t.type.name).join(", ");
-  const moves = pokemon.moves.slice(0, 4).map((m) => m.move.name).join(", ");
-  const stats = getPokemonStats(pokemon);
+function getPokemonImage(pokemon) {
+  return (
+    pokemon?.sprites?.other?.["official-artwork"]?.front_default ||
+    pokemon?.sprites?.front_default ||
+    ""
+  );
+}
 
-  // 🔥 FIX IMPORTANTE: fallback de imagen
-  const image =
-    pokemon.sprites.other?.["official-artwork"]?.front_default ||
-    pokemon.sprites.front_default ||
-    "";
+function createPokemonCard(pokemon, label = "Pokémon") {
+  const types = pokemon.types.map((t) => t.type.name).join(", ");
+  const moves = pokemon.moves.slice(0, 4).map((m) => m.move.name);
+  const stats = getPokemonStats(pokemon);
+  const image = getPokemonImage(pokemon);
 
   return `
-    <div class="pokemon-card">
-      <h3>${pokemon.name.toUpperCase()}</h3>
-      <img src="${image}" alt="${pokemon.name}">
-      <p><strong>Type:</strong> ${types}</p>
-      <p><strong>HP:</strong> ${stats.hp}</p>
-      <p><strong>Attack:</strong> ${stats.attack}</p>
-      <p><strong>Defense:</strong> ${stats.defense}</p>
-      <p><strong>Speed:</strong> ${stats.speed}</p>
-      <p><strong>Moves:</strong> ${moves}</p>
+    <article class="pokemon-card">
+      <div class="pokemon-header">
+        <div>
+          <div class="pokemon-types">${label}</div>
+          <h3 class="pokemon-name">${pokemon.name}</h3>
+        </div>
+        <div class="pokemon-types">${types}</div>
+      </div>
+
+      <div class="pokemon-image-wrap">
+        ${
+          image
+            ? `<img class="pokemon-image" src="${image}" alt="${pokemon.name}" />`
+            : `<p>No image available</p>`
+        }
+      </div>
+
+      <div class="pokemon-section">
+        <h4>Moves</h4>
+        <div class="moves-list">
+          ${moves
+            .map(
+              (move, index) => `
+              <div class="move-row">
+                <span>Move ${index + 1}</span>
+                <strong>${move}</strong>
+              </div>
+            `
+            )
+            .join("")}
+        </div>
+      </div>
+
+      <div class="pokemon-section">
+        <h4>Stats</h4>
+        <div class="stats-list">
+          <div class="stat-row"><span>HP</span><strong>${stats.hp}</strong></div>
+          <div class="stat-row"><span>Attack</span><strong>${stats.attack}</strong></div>
+          <div class="stat-row"><span>Defense</span><strong>${stats.defense}</strong></div>
+          <div class="stat-row"><span>Speed</span><strong>${stats.speed}</strong></div>
+        </div>
+      </div>
+    </article>
+  `;
+}
+
+export function renderTrainerCard(trainer) {
+  const trainerCard = document.getElementById("trainer-card");
+  trainerCard.innerHTML = `
+    <div class="trainer-info">
+      <h2>${trainer.name}</h2>
+      <p><strong>City:</strong> ${trainer.city}</p>
+      <p><strong>Phrase:</strong> ${trainer.phrase}</p>
+      <p><strong>Move:</strong> ${trainer.move}</p>
     </div>
   `;
 }
 
-export function render(state) {
-  const trainerEl = document.querySelector("#trainer-card");
-  const playerEl = document.querySelector("#player-pokemon");
-  const opponentEl = document.querySelector("#opponent-pokemon");
+export function renderPlayerPokemon(pokemon) {
+  const container = document.getElementById("player-slot");
+  container.innerHTML = createPokemonCard(pokemon, "Your Pokémon");
+}
 
-  // Trainer
-  trainerEl.innerHTML = `
-    <h2>${state.trainer.name}</h2>
-    <p><strong>Hometown:</strong> ${state.trainer.hometown}</p>
-    <p><strong>Catchphrase:</strong> ${state.trainer.catchphrase}</p>
-    <p><strong>Definitive Move:</strong> ${state.trainer.definitiveMoveName}</p>
+export function renderOpponentPokemon(pokemon) {
+  const container = document.getElementById("opponent-slot");
+  container.innerHTML = createPokemonCard(pokemon, "Opponent");
+}
+
+export function renderPlayerLoading() {
+  document.getElementById("player-slot").innerHTML = `
+    <div class="loading-card">
+      <p>Loading your Pokémon...</p>
+    </div>
   `;
+}
 
-  // Player
-  if (state.playerLoading) {
-    playerEl.innerHTML = `<p class="muted-text">Cargando Pokémon favorito...</p>`;
-  } else if (state.playerError) {
-    playerEl.innerHTML = `<p class="error-text">${state.playerError}</p>`;
-  } else if (!state.playerPokemon) {
-    playerEl.innerHTML = `<p class="muted-text">No hay Pokémon cargado.</p>`;
-  } else {
-    playerEl.innerHTML = renderPokemonCard(state.playerPokemon);
-  }
+export function renderOpponentLoading() {
+  document.getElementById("opponent-slot").innerHTML = `
+    <div class="loading-card">
+      <p>Searching opponent...</p>
+    </div>
+  `;
+}
 
-  // Opponent
-  if (state.opponentLoading) {
-    opponentEl.innerHTML = `<p class="muted-text">Cargando oponente...</p>`;
-  } else if (state.opponentError) {
-    opponentEl.innerHTML = `<p class="error-text">${state.opponentError}</p>`;
-  } else if (!state.opponentPokemon) {
-    opponentEl.innerHTML = `<p class="muted-text">No hay oponente seleccionado.</p>`;
-  } else {
-    opponentEl.innerHTML = renderPokemonCard(state.opponentPokemon);
-  }
+export function renderOpponentPlaceholder() {
+  document.getElementById("opponent-slot").innerHTML = `
+    <div class="placeholder-card">
+      <p>Search for a Pokémon to start the battle view.</p>
+    </div>
+  `;
+}
+
+export function renderPlayerError(message = "Could not load your Pokémon.") {
+  document.getElementById("player-slot").innerHTML = `
+    <div class="error-card">
+      <p>${message}</p>
+    </div>
+  `;
+}
+
+export function renderOpponentError(message = "Opponent not found.") {
+  document.getElementById("opponent-slot").innerHTML = `
+    <div class="error-card">
+      <p>${message}</p>
+    </div>
+  `;
+}
+
+export function renderBattlePlaceholder() {
+  document.getElementById("battle-result").innerHTML = `
+    <p>Choose an opponent and press Fight.</p>
+  `;
+}
+
+export function renderBattleResult(result) {
+  const battleResult = document.getElementById("battle-result");
+
+  const winnerLabel =
+    result.winner === "player"
+      ? "Winner: Your Pokémon"
+      : result.winner === "opponent"
+      ? "Winner: Opponent"
+      : "Result: Draw";
+
+  battleResult.innerHTML = `
+    <div class="battle-result-content">
+      <h3>${winnerLabel}</h3>
+      <p>${result.message}</p>
+
+      <div class="battle-score">
+        <div class="battle-score-row">
+          <span>${result.player.name.toUpperCase()}</span>
+          <strong>${result.player.score}</strong>
+        </div>
+        <div class="battle-score-row">
+          <span>${result.opponent.name.toUpperCase()}</span>
+          <strong>${result.opponent.score}</strong>
+        </div>
+      </div>
+    </div>
+  `;
 }

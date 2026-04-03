@@ -1,10 +1,10 @@
-export async function fetchPokemonByName(name) {
-  const url = `https://pokeapi.co/api/v2/pokemon/${name.toLowerCase()}`;
+const BASE_URL = "https://pokeapi.co/api/v2/pokemon";
 
-  const response = await fetch(url);
+export async function fetchPokemon(name) {
+  const response = await fetch(`${BASE_URL}/${name.toLowerCase().trim()}`);
 
   if (!response.ok) {
-    throw new Error(`No se pudo cargar el Pokémon: ${name}`);
+    throw new Error("Pokémon not found");
   }
 
   return await response.json();
