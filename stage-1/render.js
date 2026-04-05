@@ -15,24 +15,26 @@ function getPokemonImage(pokemon) {
   );
 }
 
-function getHpPercent(hp) {
-  const maxVisualHp = 255;
-  return Math.max(5, Math.min(100, (hp / maxVisualHp) * 100));
+function getHpPercent(currentHp, maxHp) {
+  if (!maxHp || maxHp <= 0) return 0;
+  return Math.max(0, Math.min(100, (currentHp / maxHp) * 100));
 }
 
-function createPokemonCard(pokemon, label = "Pokémon") {
+function createPokemonCard(pokemon, label = "Pokémon", currentHp = null) {
   const types = pokemon.types.map((t) => t.type.name).join(", ");
   const moves = pokemon.moves.slice(0, 4).map((m) => m.move.name);
   const stats = getPokemonStats(pokemon);
   const image = getPokemonImage(pokemon);
-  const hpPercent = getHpPercent(stats.hp);
+
+  const displayedHp = currentHp ?? stats.hp;
+  const hpPercent = getHpPercent(displayedHp, stats.hp);
 
   return `
     <article class="pokemon-card">
       <div class="pokemon-header">
         <div>
           <div class="pokemon-types">${label}</div>
-          <h3 class="pokemon-name">${pokemon.name}</h3>
+          <h3 class="pokemon-name">${pokemon.name.toUpperCase()}</h3>
         </div>
         <div class="pokemon-types">${types}</div>
       </div>
@@ -40,7 +42,7 @@ function createPokemonCard(pokemon, label = "Pokémon") {
       <div class="hp-block">
         <div class="hp-label-row">
           <span>HP</span>
-          <strong>${stats.hp}</strong>
+          <strong>${displayedHp}</strong>
         </div>
         <div class="hp-bar">
           <div class="hp-fill" style="width: ${hpPercent}%"></div>
@@ -96,14 +98,14 @@ export function renderTrainerCard(trainer) {
   `;
 }
 
-export function renderPlayerPokemon(pokemon) {
+export function renderPlayerPokemon(pokemon, currentHp = null) {
   const container = document.getElementById("player-slot");
-  container.innerHTML = createPokemonCard(pokemon, "Your Pokémon");
+  container.innerHTML = createPokemonCard(pokemon, "Your Pokémon", currentHp);
 }
 
-export function renderOpponentPokemon(pokemon) {
+export function renderOpponentPokemon(pokemon, currentHp = null) {
   const container = document.getElementById("opponent-slot");
-  container.innerHTML = createPokemonCard(pokemon, "Opponent");
+  container.innerHTML = createPokemonCard(pokemon, "Opponent", currentHp);
 }
 
 export function renderPlayerLoading() {
@@ -166,9 +168,12 @@ export function renderBattleResultFromBattle(battle) {
         : "Result: Draw";
   }
 
+  const currentTurn = battle.finished ? battle.turn - 1 : battle.turn;
+
   battleResult.innerHTML = `
     <div class="battle-result-content">
       <h3>${title}</h3>
+      <p class="battle-turn">Turn ${currentTurn}</p>
       <div class="battle-score">
         <div class="battle-score-row">
           <span>${battle.player.name.toUpperCase()}</span>

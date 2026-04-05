@@ -482,3 +482,27 @@ body {
   color: #334155;
   line-height: 1.4;
 }
+
+.battle-turn {
+  margin: 8px 0 14px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #4a5568;
+}
+
+button:disabled,
+button[disabled] {
+  opacity: 0.45 !important;
+  cursor: not-allowed !important;
+  filter: grayscale(60%) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+button:disabled:hover,
+button[disabled]:hover {
+  opacity: 0.45 !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  transform: none !important;
+}

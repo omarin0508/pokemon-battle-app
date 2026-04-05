@@ -3,10 +3,58 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Stage 2 - Battle</title>
+  <title>Pokémon Battle — Stage 2</title>
+  <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
-  <h1>Stage 2 - Battle</h1>
-  <p>Pendiente de construir.</p>
+  <main class="battle-stage">
+    <section class="battle-header">
+      <h1>Stage 2 — Real-Time Battle</h1>
+      <p id="battle-status">Loading battle data...</p>
+    </section>
+
+    <section class="trainer-summary">
+      <div id="trainer-summary-card" class="panel-card"></div>
+    </section>
+
+    <section class="battle-top">
+      <div id="player-panel" class="pokemon-panel"></div>
+      <div id="opponent-panel" class="pokemon-panel"></div>
+    </section>
+
+    <section class="arena-section">
+      <h2>Battle Arena</h2>
+
+      <div class="arena-board">
+        <div class="arena-row-label">Opponent Row</div>
+        <div id="opponent-row" class="arena-row"></div>
+
+        <div class="arena-vs">VS</div>
+
+        <div class="arena-row-label">Player Row</div>
+        <div id="player-row" class="arena-row"></div>
+      </div>
+    </section>
+
+    <section class="battle-controls">
+      <button id="attack-btn" type="button">Attack</button>
+      <button id="definitive-btn" type="button">Definitive Move</button>
+      <button id="back-btn" type="button">Back to Stage 1</button>
+    </section>
+
+    <section class="battle-info-grid">
+      <div class="panel-card">
+        <h3>Battle Info</h3>
+        <div id="battle-info"></div>
+      </div>
+
+      <div class="panel-card">
+        <h3>Battle Log</h3>
+        <div id="battle-log" class="battle-log-list"></div>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="./main.js"></script>
 </body>
 </html>

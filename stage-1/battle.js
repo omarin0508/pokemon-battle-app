@@ -11,9 +11,25 @@ function getBattleStats(pokemon) {
   };
 }
 
+function getBattleMoves(pokemon) {
+  return pokemon.moves.slice(0, 4).map((moveObj) => moveObj.move.name);
+}
+
+function getRandomMove(moves) {
+  if (!moves || moves.length === 0) return "basic attack";
+  const randomIndex = Math.floor(Math.random() * moves.length);
+  return moves[randomIndex];
+}
+
 function calculateDamage(attackerStats, defenderStats) {
-  const rawDamage = attackerStats.attack - Math.floor(defenderStats.defense * 0.35);
-  return Math.max(8, rawDamage);
+  const baseDamage =
+    attackerStats.attack * 0.22 -
+    defenderStats.defense * 0.10;
+
+  const randomBonus = Math.floor(Math.random() * 6); // 0 a 5
+  const finalDamage = Math.floor(baseDamage + randomBonus);
+
+  return Math.max(5, finalDamage);
 }
 
 export function createBattle(player, opponent) {
@@ -25,11 +41,13 @@ export function createBattle(player, opponent) {
       name: player.name,
       stats: playerStats,
       currentHp: playerStats.hp,
+      moves: getBattleMoves(player),
     },
     opponent: {
       name: opponent.name,
       stats: opponentStats,
       currentHp: opponentStats.hp,
+      moves: getBattleMoves(opponent),
     },
     turn: 1,
     log: [],
@@ -55,12 +73,19 @@ export function nextTurn(battle) {
   const log = [];
 
   function attack(attacker, defender) {
+    const selectedMove = getRandomMove(attacker.moves);
     const damage = calculateDamage(attacker.stats, defender.stats);
+
     defender.currentHp = Math.max(0, defender.currentHp - damage);
 
+    log.push(`${attacker.name.toUpperCase()} used ${selectedMove}!`);
     log.push(
-      `${attacker.name.toUpperCase()} attacks and deals ${damage} damage. ${defender.name.toUpperCase()} has ${defender.currentHp} HP left.`
+      `${defender.name.toUpperCase()} took ${damage} damage and has ${defender.currentHp} HP left.`
     );
+
+    if (defender.currentHp <= 0) {
+      log.push(`${defender.name.toUpperCase()} fainted!`);
+    }
   }
 
   log.push(`Turn ${battle.turn}`);
@@ -97,12 +122,20 @@ export function nextTurn(battle) {
     }
   }
 
-  if (
-    battle.player.currentHp === 0 &&
-    battle.opponent.currentHp === 0
-  ) {
+  if (battle.player.currentHp === 0 && battle.opponent.currentHp === 0) {
     battle.finished = true;
     battle.winner = "draw";
+    log.push(`Both Pokémon fainted!`);
+  }
+
+  if (battle.finished) {
+    if (battle.winner === "player") {
+      log.push(`${battle.player.name.toUpperCase()} wins the battle!`);
+    } else if (battle.winner === "opponent") {
+      log.push(`${battle.opponent.name.toUpperCase()} wins the battle!`);
+    } else {
+      log.push(`The battle ends in a draw!`);
+    }
   }
 
   battle.log.push(...log);

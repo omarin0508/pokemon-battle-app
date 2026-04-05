@@ -1,14 +1,7 @@
-const TRAINER = {
+export default {
   name: "Oscar",
-  hometown: "San José",
-  catchphrase: "Mewtwo, let’s do this.",
+  city: "San José",
+  phrase: "The battle starts now!",
+  move: "Thunder Strategy",
   favoritePokemon: "mewtwo",
-
-  definitiveMoveName: "Psychic Collapse",
-  definitiveMoveFlavor: "No escape from the mind.",
-
-  winMessage: "That’s what we trained for.",
-  loseMessage: "We’ll be back stronger."
 };
-
-export default TRAINER;
