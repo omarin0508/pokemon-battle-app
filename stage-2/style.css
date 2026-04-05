@@ -1,7 +1,18 @@
+/* =========================================================
+   1) REGLAS GLOBALES
+   - Ajustes base para todo el documento.
+   - box-sizing ayuda a que padding y border no rompan tamaños.
+   ========================================================= */
 * {
   box-sizing: border-box;
 }
 
+/* =========================================================
+   2) ESTILOS GENERALES DEL BODY
+   - Fondo general oscuro
+   - Tipografía base
+   - Color principal del texto
+   ========================================================= */
 body {
   margin: 0;
   font-family: Arial, sans-serif;
@@ -9,10 +20,17 @@ body {
   color: #f3f4f6;
 }
 
+/* Heredar fuente en botones */
 button {
   font: inherit;
 }
 
+/* =========================================================
+   3) CONTENEDOR PRINCIPAL DEL STAGE 2
+   - Centra el contenido
+   - Define ancho máximo
+   - Deja espacio interno
+   ========================================================= */
 .battle-stage {
   position: relative;
   max-width: 1200px;
@@ -20,6 +38,11 @@ button {
   padding: 24px;
 }
 
+/* =========================================================
+   4) ENCABEZADO DE LA BATALLA
+   - Título principal
+   - Mensaje de estado de batalla
+   ========================================================= */
 .battle-header {
   margin-bottom: 24px;
 }
@@ -28,6 +51,15 @@ button {
   margin-bottom: 8px;
 }
 
+#battle-status {
+  margin: 0;
+  opacity: 0.92;
+}
+
+/* =========================================================
+   5) TARJETA BASE REUTILIZABLE
+   - Se usa para paneles, info, log, end screen, cooldown, etc.
+   ========================================================= */
 .panel-card {
   background: #1f2937;
   border: 1px solid #374151;
@@ -35,10 +67,17 @@ button {
   padding: 16px;
 }
 
+/* =========================================================
+   6) SECCIÓN DE RESUMEN DEL TRAINER
+   ========================================================= */
 .trainer-summary {
   margin-bottom: 24px;
 }
 
+/* =========================================================
+   7) PANELES SUPERIORES DE POKÉMON
+   - Grid de 2 columnas para player y opponent
+   ========================================================= */
 .battle-top {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -46,10 +85,12 @@ button {
   margin-bottom: 24px;
 }
 
+/* Evita que el contenido interno rompa el ancho */
 .pokemon-panel {
   min-width: 0;
 }
 
+/* Encabezado interno de cada tarjeta Pokémon */
 .pokemon-card-top {
   display: flex;
   justify-content: space-between;
@@ -57,6 +98,7 @@ button {
   align-items: flex-start;
 }
 
+/* Etiqueta pequeña tipo "Your Pokémon" / "Opponent" */
 .mini-label {
   font-size: 12px;
   text-transform: uppercase;
@@ -64,12 +106,17 @@ button {
   letter-spacing: 0.08em;
 }
 
+/* Texto de tipos del Pokémon */
 .type-text {
   font-size: 14px;
   opacity: 0.8;
   text-align: right;
 }
 
+/* =========================================================
+   8) BLOQUE DE HP
+   - Texto + barra de vida
+   ========================================================= */
 .hp-block {
   margin: 16px 0;
 }
@@ -81,6 +128,7 @@ button {
   margin-bottom: 8px;
 }
 
+/* Fondo de la barra */
 .hp-bar {
   width: 100%;
   height: 14px;
@@ -89,12 +137,29 @@ button {
   overflow: hidden;
 }
 
+/* Parte rellena de la barra */
 .hp-fill {
   height: 100%;
-  background: #22c55e;
-  transition: width 0.3s ease;
+  transition: width 0.3s ease, background 0.25s ease, filter 0.25s ease;
 }
 
+/* Estados visuales de HP según el porcentaje */
+.hp-fill.hp-high {
+  background: #22c55e;
+}
+
+.hp-fill.hp-mid {
+  background: #f59e0b;
+}
+
+.hp-fill.hp-low {
+  background: #ef4444;
+  animation: hpLowBlink 0.8s infinite alternate;
+}
+
+/* =========================================================
+   9) IMAGEN DEL POKÉMON
+   ========================================================= */
 .pokemon-image-wrap {
   text-align: center;
   margin: 16px 0;
@@ -107,6 +172,9 @@ button {
   display: inline-block;
 }
 
+/* =========================================================
+   10) LISTADO DE MOVIMIENTOS
+   ========================================================= */
 .moves-box h3 {
   margin: 0 0 10px;
 }
@@ -119,6 +187,10 @@ button {
   border-bottom: 1px solid #374151;
 }
 
+/* =========================================================
+   11) SECCIÓN DE ARENA
+   - Contenedor general de la arena
+   ========================================================= */
 .arena-section {
   margin-bottom: 24px;
 }
@@ -130,17 +202,20 @@ button {
   padding: 20px;
 }
 
+/* Etiquetas "Opponent Row" / "Player Row" */
 .arena-row-label {
   margin-bottom: 10px;
   font-weight: bold;
 }
 
+/* Cada fila de 3 celdas */
 .arena-row {
   display: flex;
   gap: 12px;
   margin-bottom: 20px;
 }
 
+/* Texto central VS */
 .arena-vs {
   margin: 10px 0 20px;
   font-size: 20px;
@@ -149,7 +224,12 @@ button {
   text-align: center;
 }
 
+/* =========================================================
+   12) CELDAS DE LA ARENA
+   - Base visual para las 3 posiciones
+   ========================================================= */
 .arena-cell {
+  position: relative;
   flex: 1;
   min-height: 90px;
   border: 1px solid #4b5563;
@@ -163,15 +243,43 @@ button {
     transform 0.18s ease,
     border-color 0.18s ease,
     background 0.18s ease,
-    box-shadow 0.18s ease;
+    box-shadow 0.18s ease,
+    filter 0.18s ease;
 }
 
+/* =========================================================
+   13) CELDA ACTIVA
+   - Marca dónde está el jugador o el oponente
+   ========================================================= */
 .arena-cell.active {
   border-color: #60a5fa;
   background: #1e3a8a;
   box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.25);
 }
 
+/* Marcador interno más visible cuando la celda está activa */
+.arena-cell.active .arena-marker {
+  transform: scale(1.08);
+  filter: drop-shadow(0 0 8px rgba(250, 204, 21, 0.35));
+}
+
+/* Texto visual para ubicar al jugador rápidamente */
+.arena-cell.active::before {
+  content: "YOU";
+  position: absolute;
+  top: 8px;
+  left: 10px;
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 0.08em;
+  color: #bfdbfe;
+}
+
+/* =========================================================
+   14) WARNING CELL
+   - Marca la celda que será atacada por el enemigo
+   - Es el aviso previo al golpe
+   ========================================================= */
 .warning-cell {
   border-color: #ef4444;
   background: rgba(127, 29, 29, 0.95);
@@ -179,22 +287,66 @@ button {
   animation: warningPulse 0.45s infinite alternate;
 }
 
+/* =========================================================
+   15) CASO ESPECIAL: ACTIVA + WARNING
+   - Cuando el jugador está justo en la celda atacada
+   - Se conserva la identidad azul del player
+   - Pero se marca claramente el peligro
+   ========================================================= */
 .arena-cell.active.warning-cell {
-  border-color: #f87171;
-  background: linear-gradient(180deg, #7f1d1d 0%, #1e3a8a 100%);
+  border: 2px solid #f87171;
+  background: #1e3a8a;
+  box-shadow:
+    0 0 0 2px rgba(239, 68, 68, 0.28),
+    0 0 18px rgba(239, 68, 68, 0.22);
 }
 
+/* Etiqueta adicional para reforzar visualmente el warning */
+.arena-cell.active.warning-cell::after {
+  content: "INCOMING";
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  font-size: 10px;
+  font-weight: bold;
+  color: #fecaca;
+  letter-spacing: 0.08em;
+}
+
+/* =========================================================
+   16) STRIKE CELL
+   - Marca el momento en que el golpe ya cayó
+   - Diferente al warning: aquí ya se resolvió el ataque
+   ========================================================= */
+.strike-cell {
+  border-color: #fbbf24;
+  background: linear-gradient(180deg, #f97316 0%, #7f1d1d 100%);
+  box-shadow:
+    0 0 0 2px rgba(251, 191, 36, 0.25),
+    0 0 24px rgba(249, 115, 22, 0.35);
+  animation: strikeFlash 0.22s ease-out;
+}
+
+/* Ícono o marcador dentro de la celda */
 .arena-marker {
   font-size: 28px;
   margin-bottom: 8px;
 }
 
+/* Texto de posición */
 .arena-pos {
   font-size: 12px;
   opacity: 0.85;
   letter-spacing: 0.04em;
 }
 
+/* =========================================================
+   17) BOTONES DE CONTROL
+   - Attack
+   - Definitive Move
+   - Back
+   - Restart
+   ========================================================= */
 .battle-controls {
   display: flex;
   gap: 12px;
@@ -222,6 +374,7 @@ button {
   transform: none;
 }
 
+/* Colores individuales por botón */
 #attack-btn {
   background: #22c55e;
   color: #06240f;
@@ -242,12 +395,53 @@ button {
   color: #1f2937;
 }
 
+/* =========================================================
+   18) BARRA DE COOLDOWN DEL ATAQUE
+   - Visualiza el tiempo de espera del ataque normal
+   ========================================================= */
+.attack-cooldown-box {
+  margin: -8px 0 24px;
+}
+
+.attack-cooldown-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+.attack-cooldown-track {
+  width: 100%;
+  height: 10px;
+  background: #374151;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+#attack-cooldown-fill {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, #22c55e 0%, #84cc16 100%);
+  border-radius: 999px;
+  transition: width 0.08s linear;
+}
+
+/* =========================================================
+   19) GRID INFERIOR DE INFO Y LOG
+   ========================================================= */
 .battle-info-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
 }
 
+/* =========================================================
+   20) LOG DE BATALLA
+   - Altura máxima con scroll
+   - Cada línea se separa con borde inferior
+   ========================================================= */
 .battle-log-list {
   max-height: 260px;
   overflow-y: auto;
@@ -261,12 +455,10 @@ button {
   line-height: 1.45;
 }
 
-#battle-status {
-  margin: 0;
-  opacity: 0.92;
-}
-
-/* END SCREEN */
+/* =========================================================
+   21) END SCREEN
+   - Pantalla final al terminar la batalla
+   ========================================================= */
 #battle-end-screen {
   margin-top: 28px;
   padding: 24px;
@@ -296,6 +488,13 @@ button {
   color: #f8fafc;
 }
 
+/* =========================================================
+   22) ANIMACIONES
+   - warningPulse: aviso de celda atacada
+   - strikeFlash: impacto ya resuelto
+   - hpLowBlink: vida baja
+   - endScreenFade: entrada de pantalla final
+   ========================================================= */
 @keyframes warningPulse {
   from {
     transform: scale(1);
@@ -304,6 +503,30 @@ button {
   to {
     transform: scale(1.04);
     box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.28);
+  }
+}
+
+@keyframes strikeFlash {
+  0% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  50% {
+    transform: scale(1.03);
+    filter: brightness(1.15);
+  }
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
+
+@keyframes hpLowBlink {
+  from {
+    filter: brightness(1);
+  }
+  to {
+    filter: brightness(1.18);
   }
 }
 
@@ -318,6 +541,10 @@ button {
   }
 }
 
+/* =========================================================
+   23) RESPONSIVE
+   - En pantallas pequeñas, apilamos columnas
+   ========================================================= */
 @media (max-width: 900px) {
   .battle-top,
   .battle-info-grid {

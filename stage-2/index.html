@@ -8,20 +8,39 @@
 </head>
 <body>
   <main class="battle-stage">
+    <!-- =====================================================
+         ENCABEZADO DE LA BATALLA
+         - Título principal
+         - Estado actual del combate
+         ===================================================== -->
     <section class="battle-header">
       <h1>Stage 2 — Real-Time Battle</h1>
       <p id="battle-status">Loading battle data...</p>
     </section>
 
+    <!-- =====================================================
+         RESUMEN DEL TRAINER
+         - Se llena desde main.js
+         ===================================================== -->
     <section class="trainer-summary">
       <div id="trainer-summary-card" class="panel-card"></div>
     </section>
 
+    <!-- =====================================================
+         PANELES SUPERIORES
+         - Pokémon del jugador
+         - Pokémon oponente
+         ===================================================== -->
     <section class="battle-top">
       <div id="player-panel" class="pokemon-panel"></div>
       <div id="opponent-panel" class="pokemon-panel"></div>
     </section>
 
+    <!-- =====================================================
+         ARENA DE BATALLA
+         - Fila superior: oponente fijo
+         - Fila inferior: jugador se mueve con flechas
+         ===================================================== -->
     <section class="arena-section">
       <h2>Battle Arena</h2>
 
@@ -36,12 +55,39 @@
       </div>
     </section>
 
+    <!-- =====================================================
+         CONTROLES DE LA BATALLA
+         - Ataque normal
+         - Ataque definitivo
+         - Regreso a Stage 1
+         - Restart lo agrega main.js dinámicamente
+         ===================================================== -->
     <section class="battle-controls">
       <button id="attack-btn" type="button">Attack</button>
       <button id="definitive-btn" type="button">Definitive Move</button>
       <button id="back-btn" type="button">Back to Stage 1</button>
     </section>
 
+    <!-- =====================================================
+         BARRA VISUAL DEL COOLDOWN DEL ATAQUE
+         - El texto y el fill los actualiza main.js
+         ===================================================== -->
+    <section class="attack-cooldown-box panel-card">
+      <div class="attack-cooldown-label">
+        <span>Attack Cooldown</span>
+        <span id="attack-cooldown-text">Ready</span>
+      </div>
+
+      <div class="attack-cooldown-track">
+        <div id="attack-cooldown-fill"></div>
+      </div>
+    </section>
+
+    <!-- =====================================================
+         INFORMACIÓN Y LOG DE BATALLA
+         - Battle Info: datos rápidos del state
+         - Battle Log: historial del combate
+         ===================================================== -->
     <section class="battle-info-grid">
       <div class="panel-card">
         <h3>Battle Info</h3>
