@@ -1,47 +1,140 @@
 <!DOCTYPE html>
+<!-- =========================================================
+     STAGE 2 - INDEX.HTML
+     ---------------------------------------------------------
+     Este archivo define la estructura visual base de la
+     pantalla de batalla en tiempo real (Stage 2).
+
+     Responsabilidades:
+     - Estructurar la UI (no lógica)
+     - Definir contenedores que luego JS va a renderizar
+     - Conectar CSS y scripts principales
+
+     Nota:
+     Aquí NO hay lógica de batalla, solo estructura HTML.
+========================================================= -->
 <html lang="en">
 <head>
+  <!-- Configuración de caracteres -->
   <meta charset="UTF-8" />
+
+  <!-- Responsive: adapta la UI a diferentes dispositivos -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Título de la pestaña -->
   <title>Pokémon Battle — Stage 2</title>
+
+  <!-- Estilos principales -->
   <link rel="stylesheet" href="./style.css" />
 </head>
+
 <body>
+  <!-- =========================================================
+       CONTENEDOR PRINCIPAL DE LA BATALLA
+       ---------------------------------------------------------
+       Agrupa toda la UI del Stage 2
+  ========================================================= -->
   <main class="battle-stage">
+
+    <!-- =========================================================
+         HEADER DE LA BATALLA
+         ---------------------------------------------------------
+         - Título
+         - Estado dinámico de la batalla (JS lo actualiza)
+    ========================================================= -->
     <section class="battle-header">
       <h1>Stage 2 — Real-Time Battle</h1>
       <p id="battle-status">Loading battle data...</p>
     </section>
 
+
+    <!-- =========================================================
+         RESUMEN DEL ENTRENADOR
+         ---------------------------------------------------------
+         - Aquí se renderiza la tarjeta del entrenador
+         - Se llena dinámicamente desde render.js
+    ========================================================= -->
     <section class="trainer-summary">
       <div id="trainer-summary-card" class="panel-card"></div>
     </section>
 
+
+    <!-- =========================================================
+         PANEL SUPERIOR DE POKÉMONS
+         ---------------------------------------------------------
+         - Panel izquierdo: jugador
+         - Panel derecho: oponente
+         - JS inserta las tarjetas aquí
+    ========================================================= -->
     <section class="battle-top">
       <div id="player-panel" class="pokemon-panel"></div>
       <div id="opponent-panel" class="pokemon-panel"></div>
     </section>
 
+
+    <!-- =========================================================
+         ARENA DE BATALLA
+         ---------------------------------------------------------
+         Representación visual tipo tablero:
+
+           Opponent Row
+           [ Pokémon oponente ]
+
+                  VS
+
+           Player Row
+           [ Pokémon jugador ]
+
+         - Las filas se llenan dinámicamente
+    ========================================================= -->
     <section class="arena-section">
       <h2>Battle Arena</h2>
 
       <div class="arena-board">
+        <!-- Fila del oponente -->
         <div class="arena-row-label">Opponent Row</div>
         <div id="opponent-row" class="arena-row"></div>
 
+        <!-- Separador visual -->
         <div class="arena-vs">VS</div>
 
+        <!-- Fila del jugador -->
         <div class="arena-row-label">Player Row</div>
         <div id="player-row" class="arena-row"></div>
       </div>
     </section>
 
+
+    <!-- =========================================================
+         CONTROLES DE BATALLA
+         ---------------------------------------------------------
+         Botones principales:
+         - Attack: ejecuta turno normal
+         - Definitive Move: acción especial (extendible)
+         - Back: regresar a Stage 1
+
+         Nota:
+         Los eventos se manejan en main.js
+    ========================================================= -->
     <section class="battle-controls">
       <button id="attack-btn" type="button">Attack</button>
       <button id="definitive-btn" type="button">Definitive Move</button>
       <button id="back-btn" type="button">Back to Stage 1</button>
     </section>
 
+
+    <!-- =========================================================
+         COOLDOWN DE ATAQUE
+         ---------------------------------------------------------
+         Indicador visual del tiempo entre ataques:
+
+         - Texto: estado (Ready / cooldown)
+         - Barra: progreso del cooldown
+
+         Elementos dinámicos:
+         - #attack-cooldown-text
+         - #attack-cooldown-fill
+    ========================================================= -->
     <section class="attack-cooldown-box panel-card">
       <div class="attack-cooldown-label">
         <span>Attack Cooldown</span>
@@ -53,21 +146,56 @@
       </div>
     </section>
 
+
+    <!-- =========================================================
+         GRID DE INFORMACIÓN
+         ---------------------------------------------------------
+         Dos paneles principales:
+
+         1. Battle Info:
+            - Stats, turno, estado general
+
+         2. Battle Log:
+            - Historial de eventos de la batalla
+            - Ataques, daño, resultados
+
+         Ambos se llenan dinámicamente con JS
+    ========================================================= -->
     <section class="battle-info-grid">
+
+      <!-- Panel de información general -->
       <div class="panel-card">
         <h3>Battle Info</h3>
         <div id="battle-info"></div>
       </div>
 
+      <!-- Panel de log de batalla -->
       <div class="panel-card">
         <h3>Battle Log</h3>
         <div id="battle-log" class="battle-log-list"></div>
       </div>
+
     </section>
   </main>
 
+
+  <!-- =========================================================
+       SCRIPTS DEL STAGE 2
+       ---------------------------------------------------------
+       Orden importante:
+
+       1. render.js
+          - Se encarga de dibujar la UI
+
+       2. battle.js
+          - Contiene la lógica de combate
+
+       3. main.js
+          - Controla eventos, flujo y conexión entre lógica y UI
+  ========================================================= -->
   <script src="./render.js"></script>
   <script src="./battle.js"></script>
   <script src="./main.js"></script>
+
 </body>
 </html>

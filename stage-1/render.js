@@ -48,27 +48,51 @@ function getHpPercent(currentHp, maxHp) {
   return Math.max(0, Math.min(100, (currentHp / maxHp) * 100));
 }
 
+/* Devuelve el tipo principal para aplicar una clase visual */
+function getPrimaryType(pokemon) {
+  return pokemon?.types?.[0]?.type?.name ?? "normal";
+}
+
+/* Convierte el tipo en una clase CSS reutilizable */
+function getPokemonTypeClass(pokemon) {
+  return `type-${getPrimaryType(pokemon)}`;
+}
+
 /* =========================================================
    2) CREACIÓN DE TARJETA DE POKÉMON
    ---------------------------------------------------------
    Construye el HTML de una tarjeta visual de Pokémon
    con nombre, tipos, HP, imagen, movimientos y stats.
+
+   Si api.js ya enriqueció los movimientos, usamos
+   pokemon.moveDetails. Si no, usamos los nombres básicos.
    ========================================================= */
 function createPokemonCard(pokemon, label = "Pokémon", currentHp = null) {
   const types = pokemon.types.map((t) => t.type.name).join(", ");
-  const moves = pokemon.moves.slice(0, 4).map((m) => m.move.name);
   const stats = getPokemonStats(pokemon);
   const image = getPokemonImage(pokemon);
+  const typeClass = getPokemonTypeClass(pokemon);
+
+  const moves =
+    pokemon.moveDetails?.length > 0
+      ? pokemon.moveDetails
+      : pokemon.moves.slice(0, 4).map((m) => ({
+          name: m.move.name,
+          power: "—",
+          accuracy: "—",
+          pp: "—",
+          type: "unknown",
+        }));
 
   /* Si no se pasa un HP actual, se usa el HP base */
   const displayedHp = currentHp ?? stats.hp;
   const hpPercent = getHpPercent(displayedHp, stats.hp);
 
   return `
-    <article class="pokemon-card">
+    <article class="pokemon-card ${typeClass}">
       <div class="pokemon-header">
         <div>
-          <div class="pokemon-types">${label}</div>
+          <div class="pokemon-label">${label}</div>
           <h3 class="pokemon-name">${pokemon.name.toUpperCase()}</h3>
         </div>
         <div class="pokemon-types">${types}</div>
@@ -99,8 +123,13 @@ function createPokemonCard(pokemon, label = "Pokémon", currentHp = null) {
             .map(
               (move, index) => `
               <div class="move-row">
-                <span>Move ${index + 1}</span>
-                <strong>${move}</strong>
+                <div>
+                  <span>Move ${index + 1}</span>
+                  <strong>${move.name}</strong>
+                </div>
+                <small>
+                  Power: ${move.power} · Accuracy: ${move.accuracy} · PP: ${move.pp}
+                </small>
               </div>
             `
             )
@@ -131,9 +160,6 @@ function createPokemonCard(pokemon, label = "Pokémon", currentHp = null) {
    - hometown / city
    - catchphrase / phrase
    - definitiveMoveName / move
-
-   Esto evita romper el proyecto mientras alineamos
-   los nombres entre Stage 1 y Stage 2.
    ========================================================= */
 export function renderTrainerCard(trainer) {
   const trainerCard = document.getElementById("trainer-card");
@@ -156,8 +182,6 @@ export function renderTrainerCard(trainer) {
 
 /* =========================================================
    4) RENDER DEL POKÉMON DEL JUGADOR
-   ---------------------------------------------------------
-   Dibuja la tarjeta del Pokémon favorito del trainer.
    ========================================================= */
 export function renderPlayerPokemon(pokemon, currentHp = null) {
   const container = document.getElementById("player-slot");
@@ -168,8 +192,6 @@ export function renderPlayerPokemon(pokemon, currentHp = null) {
 
 /* =========================================================
    5) RENDER DEL POKÉMON OPONENTE
-   ---------------------------------------------------------
-   Dibuja la tarjeta del Pokémon rival seleccionado.
    ========================================================= */
 export function renderOpponentPokemon(pokemon, currentHp = null) {
   const container = document.getElementById("opponent-slot");
@@ -181,32 +203,45 @@ export function renderOpponentPokemon(pokemon, currentHp = null) {
 /* =========================================================
    6) ESTADOS DE CARGA
    ---------------------------------------------------------
-   Se usan mientras se espera la respuesta de datos.
+   Ahora usamos skeletons simples para que el loading
+   se vea más pro y más claro visualmente.
    ========================================================= */
-export function renderPlayerLoading() {
-  document.getElementById("player-slot").innerHTML = `
-    <div class="loading-card">
-      <p>Loading your Pokémon...</p>
+function createLoadingSkeleton(message) {
+  return `
+    <div class="loading-card skeleton-card">
+      <div class="skeleton skeleton-text skeleton-title"></div>
+      <div class="skeleton skeleton-text skeleton-subtitle"></div>
+      <div class="skeleton skeleton-bar"></div>
+      <div class="skeleton skeleton-image"></div>
+      <div class="skeleton skeleton-text"></div>
+      <div class="skeleton skeleton-text"></div>
+      <p class="loading-message">${message}</p>
     </div>
   `;
 }
 
+export function renderPlayerLoading() {
+  const slot = document.getElementById("player-slot");
+  if (!slot) return;
+
+  slot.innerHTML = createLoadingSkeleton("Loading your Pokémon...");
+}
+
 export function renderOpponentLoading() {
-  document.getElementById("opponent-slot").innerHTML = `
-    <div class="loading-card">
-      <p>Searching opponent...</p>
-    </div>
-  `;
+  const slot = document.getElementById("opponent-slot");
+  if (!slot) return;
+
+  slot.innerHTML = createLoadingSkeleton("Searching opponent...");
 }
 
 /* =========================================================
    7) PLACEHOLDERS
-   ---------------------------------------------------------
-   Estados iniciales o vacíos cuando todavía no hay
-   un oponente o un resultado activo.
    ========================================================= */
 export function renderOpponentPlaceholder() {
-  document.getElementById("opponent-slot").innerHTML = `
+  const slot = document.getElementById("opponent-slot");
+  if (!slot) return;
+
+  slot.innerHTML = `
     <div class="placeholder-card">
       <p>Search for a Pokémon to start the battle view.</p>
     </div>
@@ -214,19 +249,25 @@ export function renderOpponentPlaceholder() {
 }
 
 export function renderBattlePlaceholder() {
-  document.getElementById("battle-result").innerHTML = `
+  const battleResult = document.getElementById("battle-result");
+  if (!battleResult) return;
+
+  battleResult.innerHTML = `
     <p>Choose an opponent and press Go to Battle.</p>
   `;
 }
 
 export function renderBattleLogPlaceholder() {
   const battleLog = document.getElementById("battle-log");
+  if (!battleLog) return;
 
   battleLog.innerHTML = `
     <div class="battle-log-content">
       <h3>Battle Log</h3>
       <div class="battle-log-list">
-        <p>The turn-by-turn battle log will appear here.</p>
+        <p>  This section will show the battle log in Stage 2.
+             Select your opponent and proceed to battle.
+        </p>
       </div>
     </div>
   `;
@@ -234,12 +275,12 @@ export function renderBattleLogPlaceholder() {
 
 /* =========================================================
    8) ESTADOS DE ERROR
-   ---------------------------------------------------------
-   Se muestran cuando falla la carga del player o
-   la búsqueda del oponente.
    ========================================================= */
 export function renderPlayerError(message = "Could not load your Pokémon.") {
-  document.getElementById("player-slot").innerHTML = `
+  const slot = document.getElementById("player-slot");
+  if (!slot) return;
+
+  slot.innerHTML = `
     <div class="error-card">
       <p>${message}</p>
     </div>
@@ -247,7 +288,10 @@ export function renderPlayerError(message = "Could not load your Pokémon.") {
 }
 
 export function renderOpponentError(message = "Opponent not found.") {
-  document.getElementById("opponent-slot").innerHTML = `
+  const slot = document.getElementById("opponent-slot");
+  if (!slot) return;
+
+  slot.innerHTML = `
     <div class="error-card">
       <p>${message}</p>
     </div>
@@ -256,12 +300,10 @@ export function renderOpponentError(message = "Opponent not found.") {
 
 /* =========================================================
    9) RESULTADO DE BATALLA PREVIA
-   ---------------------------------------------------------
-   Esta función sirve para mostrar un resumen de batalla
-   si se simula o procesa previamente desde Stage 1.
    ========================================================= */
 export function renderBattleResultFromBattle(battle) {
   const battleResult = document.getElementById("battle-result");
+  if (!battleResult || !battle) return;
 
   let title = "Battle in progress";
 
@@ -296,12 +338,10 @@ export function renderBattleResultFromBattle(battle) {
 
 /* =========================================================
    10) LOG DE BATALLA
-   ---------------------------------------------------------
-   Dibuja la lista de eventos o mensajes de batalla
-   en formato visual.
    ========================================================= */
 export function renderBattleLog(logEntries) {
   const battleLog = document.getElementById("battle-log");
+  if (!battleLog) return;
 
   battleLog.innerHTML = `
     <div class="battle-log-content">

@@ -159,15 +159,19 @@ Incluye:
 
 ```
 /stage-1
-  index.html
-  main.js
-  style.css
-
-/stage-2
+  api.js
+  battle.js
   index.html
   main.js
   render.js
+  storage.js
+  style.css
+
+/stage-2
   battle.js
+  index.html
+  main.js
+  render.js
   style.css
 ```
 
@@ -192,6 +196,35 @@ Incluye:
 * Persistencia de resultados
 
 ---
+
+## 🆕 Ajustes finales implementados en Stage 1
+
+* Consumo de API más robusto
+* Uso de `AbortController` para cancelar requests previos
+* Manejo de errores (`404`, cancelación, etc.)
+* Estados de UI mejor definidos:
+
+  * Loading
+  * Error
+  * Placeholder
+* Carga automática del Pokémon favorito del trainer
+* Búsqueda dinámica del oponente
+* Guardado en `localStorage`
+* Control de botones (`Go to Battle` / `Reset`)
+* Separación clara entre lógica y render
+* Cards más completas con:
+
+  * Stats
+  * Moves enriquecidos
+  * Imagen oficial
+  * HP bar funcional
+* Mejoras visuales en CSS:
+
+  * Theme por tipo (`type-fire`, etc.)
+  * Skeleton loading
+  * HP bar animada
+  * Limpieza de estilos duplicados
+  * Mejor responsive
 
 # 👨‍💻 Autor
 

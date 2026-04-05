@@ -36,6 +36,7 @@
            BUSCADOR DE POKÉMON OPONENTE
            - Input para escribir nombre
            - Botón para ejecutar búsqueda
+           - aria-label mejora la accesibilidad
            ===================================================== -->
       <div class="search-box">
         <input
@@ -43,6 +44,7 @@
           id="opponent-input"
           placeholder="Search opponent Pokémon..."
           autocomplete="off"
+          aria-label="Opponent Pokémon name"
         />
         <button id="search-btn" type="button">Search</button>
       </div>
@@ -56,7 +58,10 @@
          ===================================================== -->
     <section class="battle-arena">
 
-      <!-- Slot del Pokémon del jugador -->
+      <!-- =====================================================
+           SLOT DEL POKÉMON DEL JUGADOR
+           - Aquí se renderiza el Pokémon favorito del trainer
+           ===================================================== -->
       <div id="player-slot" class="battle-slot"></div>
 
       <!-- =====================================================
@@ -74,9 +79,11 @@
              BOTONES PRINCIPALES
              - Go to Battle: pasa al Stage 2
              - Reset: limpia selección actual
+             - Fight inicia deshabilitado hasta que ambos
+               Pokémon estén listos
              ===================================================== -->
         <div class="battle-actions">
-          <button id="fight-btn" class="fight-btn" type="button">
+          <button id="fight-btn" class="fight-btn" type="button" disabled>
             Go to Battle
           </button>
 
@@ -95,7 +102,10 @@
         </div>
       </div>
 
-      <!-- Slot del Pokémon oponente -->
+      <!-- =====================================================
+           SLOT DEL POKÉMON OPONENTE
+           - Aquí aparece el Pokémon buscado por el usuario
+           ===================================================== -->
       <div id="opponent-slot" class="battle-slot"></div>
     </section>
 
@@ -120,13 +130,15 @@
   </main>
 
   <!-- =====================================================
-       SCRIPT PRINCIPAL (IMPORTANTE)
+       SCRIPT PRINCIPAL
        - Se usa type="module"
        - Aquí vive toda la lógica del Stage 1
        - Maneja:
+         * carga del trainer
          * búsqueda de Pokémon
-         * selección
-         * navegación a Stage 2
+         * selección del oponente
+         * guardado para Stage 2
+         * navegación a la batalla
        ===================================================== -->
   <script type="module" src="./main.js"></script>
 </body>

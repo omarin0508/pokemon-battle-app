@@ -35,9 +35,6 @@ import {
 
 /* =========================================================
    1) ESTADO GLOBAL DEL STAGE 1
-   ---------------------------------------------------------
-   Guarda la información principal que se necesita para
-   preparar la batalla.
    ========================================================= */
 const state = {
   trainer: null,
@@ -46,14 +43,16 @@ const state = {
 };
 
 /* =========================================================
-   2) ACTUALIZAR ESTADO DE BOTONES
+   2) TEMPORIZADOR PARA DEBOUNCE
    ---------------------------------------------------------
-   Habilita o deshabilita botones según si ya están listos:
-   - el Pokémon del jugador
-   - el Pokémon oponente
+   Se usa para evitar disparar una búsqueda en cada tecla
+   sin control. Solo busca cuando el usuario deja de escribir
+   por un pequeño momento.
+   ========================================================= */
+let searchDebounceTimer = null;
 
-   Regla:
-   - Si falta alguno, no se puede ir a la batalla.
+/* =========================================================
+   3) ACTUALIZAR BOTONES
    ========================================================= */
 function updateBattleControls() {
   const fightBtn = document.getElementById("fight-btn");
@@ -72,12 +71,7 @@ function updateBattleControls() {
 }
 
 /* =========================================================
-   3) CARGAR CONFIGURACIÓN DEL TRAINER
-   ---------------------------------------------------------
-   Importa dinámicamente el archivo trainer.config.js.
-
-   Esto permite separar la información personal del trainer
-   de la lógica principal del programa.
+   4) CARGAR CONFIGURACIÓN DEL TRAINER
    ========================================================= */
 async function loadTrainerConfig() {
   const module = await import("../trainer.config.js");
@@ -85,42 +79,31 @@ async function loadTrainerConfig() {
 }
 
 /* =========================================================
-   4) CARGAR OPONENTE POR NOMBRE
+   5) CARGAR OPONENTE POR NOMBRE
    ---------------------------------------------------------
-   Busca un Pokémon en la API y lo coloca como oponente.
-
-   Parámetros:
-   - name: nombre del Pokémon a buscar
-   - updateInput: si es true, también actualiza el input
-     con el nombre final encontrado
-
-   Flujo:
-   - muestra loading
-   - intenta buscar
-   - si funciona: renderiza oponente y lo guarda
-   - si falla: muestra error y limpia el oponente
+   Usa AbortController desde api.js para cancelar búsquedas
+   previas del oponente cuando haga falta.
    ========================================================= */
 async function loadOpponentByName(name, { updateInput = false } = {}) {
-  if (!name) return;
+  if (!name?.trim()) return;
 
   const input = document.getElementById("opponent-input");
 
   try {
-    /* Mostrar estados visuales mientras carga */
     renderOpponentLoading();
     renderBattlePlaceholder();
     renderBattleLogPlaceholder();
 
-    const pokemon = await fetchPokemon(name);
+    const pokemon = await fetchPokemon(name, { useAbort: true });
+
+    /* Si la request fue cancelada, no seguimos */
+    if (!pokemon) return;
+
     state.opponent = pokemon;
 
-    /* Dibujar el oponente encontrado */
     renderOpponentPokemon(state.opponent);
-
-    /* Guardar el último oponente exitoso */
     saveLastOpponent(state.opponent.name);
 
-    /* Si se pide, actualizar el input con el nombre correcto */
     if (updateInput && input) {
       input.value = state.opponent.name;
     }
@@ -131,7 +114,6 @@ async function loadOpponentByName(name, { updateInput = false } = {}) {
 
     state.opponent = null;
 
-    /* Mostrar error si no existe o falla la búsqueda */
     renderOpponentError("That Pokémon does not exist.");
     renderBattlePlaceholder();
     renderBattleLogPlaceholder();
@@ -141,37 +123,25 @@ async function loadOpponentByName(name, { updateInput = false } = {}) {
 }
 
 /* =========================================================
-   5) INICIALIZACIÓN GENERAL
-   ---------------------------------------------------------
-   Arranca el Stage 1.
-
-   Qué hace:
-   - carga trainer.config.js
-   - renderiza la tarjeta del entrenador
-   - carga el Pokémon favorito del trainer
-   - revisa si había un oponente previo guardado
-   - actualiza botones
+   6) INICIALIZAR STAGE 1
    ========================================================= */
 async function init() {
   try {
-    /* Cargar datos del entrenador */
     const trainerConfig = await loadTrainerConfig();
     state.trainer = trainerConfig;
 
-    /* Dibujar UI inicial */
     renderTrainerCard(state.trainer);
     renderOpponentPlaceholder();
     renderBattlePlaceholder();
     renderBattleLogPlaceholder();
     renderPlayerLoading();
 
-    /* Cargar el Pokémon favorito del trainer como player */
+    /* El Pokémon favorito no necesita AbortController */
     const favoritePokemon = await fetchPokemon(state.trainer.favoritePokemon);
     state.player = favoritePokemon;
 
     renderPlayerPokemon(state.player);
 
-    /* Si existe un último oponente guardado, cargarlo automáticamente */
     const lastOpponent = getLastOpponent();
     if (lastOpponent) {
       await loadOpponentByName(lastOpponent, { updateInput: true });
@@ -185,13 +155,7 @@ async function init() {
 }
 
 /* =========================================================
-   6) BUSCAR OPONENTE DESDE EL INPUT
-   ---------------------------------------------------------
-   Lee el valor escrito por el usuario y lanza la búsqueda.
-
-   Si el input está vacío:
-   - limpia el oponente
-   - muestra error
+   7) BUSCAR OPONENTE DESDE EL INPUT
    ========================================================= */
 async function searchOpponent() {
   const input = document.getElementById("opponent-input");
@@ -212,15 +176,33 @@ async function searchOpponent() {
 }
 
 /* =========================================================
-   7) IR A LA BATALLA (STAGE 2)
+   8) DEBOUNCE PARA LIVE SEARCH
    ---------------------------------------------------------
-   Valida que existan ambos Pokémon.
-   Si todo está listo:
-   - arma el objeto battleData
-   - lo guarda en localStorage
-   - navega al Stage 2
+   Espera unos milisegundos después de que el usuario deje
+   de escribir antes de lanzar la búsqueda.
+   ========================================================= */
+function handleOpponentInput() {
+  const input = document.getElementById("opponent-input");
+  const value = input?.value.trim();
 
-   Esto es el puente entre Stage 1 y Stage 2.
+  clearTimeout(searchDebounceTimer);
+
+  if (!value) {
+    state.opponent = null;
+    renderOpponentPlaceholder();
+    renderBattlePlaceholder();
+    renderBattleLogPlaceholder();
+    updateBattleControls();
+    return;
+  }
+
+  searchDebounceTimer = setTimeout(() => {
+    searchOpponent();
+  }, 500);
+}
+
+/* =========================================================
+   9) IR A STAGE 2
    ========================================================= */
 function goToBattle() {
   if (!state.player || !state.opponent) {
@@ -244,18 +226,13 @@ function goToBattle() {
 }
 
 /* =========================================================
-   8) RESETEAR SELECCIÓN
-   ---------------------------------------------------------
-   Limpia:
-   - input del oponente
-   - oponente actual
-   - último oponente guardado
-
-   Luego devuelve la UI al estado base.
+   10) RESETEAR SELECCIÓN
    ========================================================= */
 function resetSelection() {
   const input = document.getElementById("opponent-input");
   if (input) input.value = "";
+
+  clearTimeout(searchDebounceTimer);
 
   state.opponent = null;
   clearLastOpponent();
@@ -272,28 +249,23 @@ function resetSelection() {
 }
 
 /* =========================================================
-   9) EVENTOS DE LA INTERFAZ
-   ---------------------------------------------------------
-   Conectan botones y teclado con la lógica del Stage 1.
+   11) EVENTOS
    ========================================================= */
-
-/* Buscar oponente al hacer click */
 document.getElementById("search-btn")?.addEventListener("click", searchOpponent);
 
-/* Buscar oponente al presionar Enter en el input */
 document.getElementById("opponent-input")?.addEventListener("keydown", (event) => {
   if (event.key === "Enter") {
+    clearTimeout(searchDebounceTimer);
     searchOpponent();
   }
 });
 
-/* Navegar a Stage 2 */
-document.getElementById("fight-btn")?.addEventListener("click", goToBattle);
+document.getElementById("opponent-input")?.addEventListener("input", handleOpponentInput);
 
-/* Resetear selección */
+document.getElementById("fight-btn")?.addEventListener("click", goToBattle);
 document.getElementById("reset-btn")?.addEventListener("click", resetSelection);
 
 /* =========================================================
-   10) ARRANQUE DEL STAGE 1
+   12) ARRANQUE
    ========================================================= */
 init();

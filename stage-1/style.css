@@ -1,3 +1,19 @@
+/* =========================================================
+   STAGE 1 - STYLE.CSS
+   ---------------------------------------------------------
+   Hoja de estilos principal del Stage 1.
+
+   Objetivos:
+   - Dar estructura visual clara al layout
+   - Estilizar trainer card, búsqueda y cards de Pokémon
+   - Soportar estados: loading, placeholder y error
+   - Agregar theme visual según tipo principal del Pokémon
+   - Mejorar el loading con skeletons reutilizables
+   ========================================================= */
+
+/* =========================================================
+   1) RESET GENERAL
+   ========================================================= */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -17,10 +33,9 @@ body {
   margin: 0 auto;
 }
 
-/* =========================
-   TRAINER + SEARCH
-========================= */
-
+/* =========================================================
+   2) PANEL SUPERIOR: TRAINER + SEARCH
+   ========================================================= */
 .trainer-panel {
   display: grid;
   gap: 16px;
@@ -50,10 +65,9 @@ body {
   line-height: 1.4;
 }
 
-/* =========================
-   SEARCH
-========================= */
-
+/* =========================================================
+   3) BÚSQUEDA
+   ========================================================= */
 .search-box {
   display: flex;
   gap: 10px;
@@ -96,10 +110,9 @@ body {
   background: #1d4ed8;
 }
 
-/* =========================
-   BATTLE ARENA
-========================= */
-
+/* =========================================================
+   4) BATTLE ARENA
+   ========================================================= */
 .battle-arena {
   display: grid;
   grid-template-columns: minmax(320px, 1fr) 180px minmax(320px, 1fr);
@@ -116,10 +129,9 @@ body {
   min-width: 0;
 }
 
-/* =========================
-   CENTER (VS + ACTIONS)
-========================= */
-
+/* =========================================================
+   5) CENTRO: VS + BOTONES + RESULTADO
+   ========================================================= */
 .battle-center {
   display: grid;
   gap: 18px;
@@ -141,10 +153,6 @@ body {
   box-shadow: 0 8px 18px rgba(185, 28, 28, 0.35);
 }
 
-/* =========================
-   BUTTONS
-========================= */
-
 .battle-actions {
   display: grid;
   gap: 10px;
@@ -152,7 +160,8 @@ body {
 }
 
 .fight-btn,
-.reset-btn {
+.reset-btn,
+.next-turn-btn {
   border: none;
   border-radius: 12px;
   padding: 12px 16px;
@@ -172,16 +181,21 @@ body {
   color: white;
 }
 
+.next-turn-btn {
+  background: #f59e0b;
+  color: white;
+}
+
 .fight-btn:hover,
-.reset-btn:hover {
+.reset-btn:hover,
+.next-turn-btn:hover {
   transform: translateY(-1px);
   opacity: 0.95;
 }
 
-/* =========================
-   RESULT PANEL
-========================= */
-
+/* =========================================================
+   6) PANEL DE RESULTADO
+   ========================================================= */
 .battle-result {
   width: 100%;
   max-width: 220px;
@@ -224,13 +238,27 @@ body {
   padding: 10px 12px;
 }
 
-/* =========================
-   POKEMON CARD
-========================= */
+.battle-turn {
+  margin: 8px 0 14px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #4a5568;
+}
 
+/* =========================================================
+   7) TARJETA DE POKÉMON
+   ---------------------------------------------------------
+   La card base funciona para player y opponent.
+   Además permite aplicar clases por tipo:
+   .type-fire, .type-water, etc.
+   ========================================================= */
 .pokemon-card {
   display: grid;
   gap: 14px;
+  padding: 16px;
+  border-radius: 20px;
+  border: 1px solid #e2e8f0;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
 }
 
 .pokemon-header {
@@ -247,6 +275,12 @@ body {
   line-height: 1.1;
 }
 
+.pokemon-label {
+  font-size: 13px;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+
 .pokemon-types {
   font-size: 14px;
   color: #475569;
@@ -258,7 +292,7 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 200px;
-  background: #f8fafc;
+  background: rgba(248, 250, 252, 0.9);
   border-radius: 18px;
   padding: 12px;
 }
@@ -271,7 +305,7 @@ body {
 }
 
 .pokemon-section {
-  background: #f8fafc;
+  background: rgba(248, 250, 252, 0.95);
   border-radius: 16px;
   padding: 14px;
 }
@@ -298,16 +332,159 @@ body {
   padding: 8px 10px;
 }
 
+.move-row {
+  align-items: flex-start;
+}
+
+.move-row > div {
+  display: grid;
+  gap: 2px;
+}
+
+.move-row small {
+  color: #64748b;
+  text-align: right;
+  line-height: 1.3;
+}
+
 .move-row strong,
 .stat-row strong {
   text-align: right;
   word-break: break-word;
 }
 
-/* =========================
-   STATES
-========================= */
+/* =========================================================
+   8) HP BLOCK
+   ========================================================= */
+.hp-block {
+  display: grid;
+  gap: 8px;
+  background: rgba(248, 250, 252, 0.95);
+  border-radius: 14px;
+  padding: 12px;
+}
 
+.hp-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+}
+
+.hp-bar {
+  width: 100%;
+  height: 12px;
+  background: #dbe4f0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.hp-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #22c55e 0%, #84cc16 100%);
+  transition: width 0.3s ease;
+}
+
+/* =========================================================
+   9) TYPE-BASED COLOR THEME
+   ---------------------------------------------------------
+   Estas clases se aplican a la tarjeta completa según
+   el tipo principal del Pokémon.
+   ========================================================= */
+.type-fire {
+  background: linear-gradient(180deg, #fff7ed 0%, #ffedd5 100%);
+  border-color: #fdba74;
+}
+
+.type-water {
+  background: linear-gradient(180deg, #eff6ff 0%, #dbeafe 100%);
+  border-color: #93c5fd;
+}
+
+.type-grass {
+  background: linear-gradient(180deg, #f0fdf4 0%, #dcfce7 100%);
+  border-color: #86efac;
+}
+
+.type-electric {
+  background: linear-gradient(180deg, #fefce8 0%, #fef3c7 100%);
+  border-color: #fde047;
+}
+
+.type-psychic {
+  background: linear-gradient(180deg, #fdf2f8 0%, #fce7f3 100%);
+  border-color: #f9a8d4;
+}
+
+.type-ice {
+  background: linear-gradient(180deg, #ecfeff 0%, #cffafe 100%);
+  border-color: #67e8f9;
+}
+
+.type-fighting {
+  background: linear-gradient(180deg, #fef2f2 0%, #fee2e2 100%);
+  border-color: #fca5a5;
+}
+
+.type-poison {
+  background: linear-gradient(180deg, #faf5ff 0%, #f3e8ff 100%);
+  border-color: #d8b4fe;
+}
+
+.type-ground {
+  background: linear-gradient(180deg, #fffbeb 0%, #fef3c7 100%);
+  border-color: #fcd34d;
+}
+
+.type-flying {
+  background: linear-gradient(180deg, #f8fafc 0%, #e0f2fe 100%);
+  border-color: #7dd3fc;
+}
+
+.type-bug {
+  background: linear-gradient(180deg, #f7fee7 0%, #ecfccb 100%);
+  border-color: #bef264;
+}
+
+.type-rock {
+  background: linear-gradient(180deg, #fafaf9 0%, #e7e5e4 100%);
+  border-color: #d6d3d1;
+}
+
+.type-ghost {
+  background: linear-gradient(180deg, #f5f3ff 0%, #ede9fe 100%);
+  border-color: #c4b5fd;
+}
+
+.type-dragon {
+  background: linear-gradient(180deg, #eef2ff 0%, #e0e7ff 100%);
+  border-color: #a5b4fc;
+}
+
+.type-dark {
+  background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
+  border-color: #94a3b8;
+}
+
+.type-steel {
+  background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
+  border-color: #cbd5e1;
+}
+
+.type-fairy {
+  background: linear-gradient(180deg, #fdf2f8 0%, #fce7f3 100%);
+  border-color: #fbcfe8;
+}
+
+.type-normal {
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  border-color: #cbd5e1;
+}
+
+/* =========================================================
+   10) ESTADOS
+   ========================================================= */
 .placeholder-card,
 .error-card,
 .loading-card {
@@ -322,10 +499,133 @@ body {
   background: #f8fafc;
 }
 
-/* =========================
-   RESPONSIVE
-========================= */
+.error-card {
+  border-color: #fca5a5;
+  background: #fef2f2;
+  color: #b91c1c;
+}
 
+/* =========================================================
+   11) SKELETON LOADING
+   ---------------------------------------------------------
+   Se usa para dar una sensación visual más real de carga.
+   ========================================================= */
+.skeleton-card {
+  align-content: start;
+  gap: 12px;
+}
+
+.skeleton {
+  border-radius: 12px;
+  background: linear-gradient(90deg, #e2e8f0 25%, #f8fafc 50%, #e2e8f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.2s infinite linear;
+}
+
+.skeleton-title {
+  height: 24px;
+  width: 60%;
+}
+
+.skeleton-subtitle {
+  height: 16px;
+  width: 40%;
+}
+
+.skeleton-text {
+  height: 14px;
+  width: 100%;
+}
+
+.skeleton-bar {
+  height: 12px;
+  width: 100%;
+  border-radius: 999px;
+}
+
+.skeleton-image {
+  width: 180px;
+  height: 180px;
+  margin: 0 auto;
+  border-radius: 18px;
+}
+
+.loading-message {
+  font-size: 14px;
+  color: #64748b;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* =========================================================
+   12) BATTLE LOG
+   ---------------------------------------------------------
+   Se deja consolidado en una sola definición para evitar
+   repeticiones.
+   ========================================================= */
+.battle-log {
+  margin-top: 28px;
+  background: white;
+  border-radius: 24px;
+  padding: 20px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
+}
+
+.battle-log-content {
+  display: grid;
+  gap: 14px;
+}
+
+.battle-log-content h3 {
+  font-size: 22px;
+}
+
+.battle-log-list {
+  display: grid;
+  gap: 10px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.battle-log-list p {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 12px 14px;
+  color: #334155;
+  line-height: 1.4;
+}
+
+/* =========================================================
+   13) BOTONES DESHABILITADOS
+   ========================================================= */
+button:disabled,
+button[disabled] {
+  opacity: 0.45 !important;
+  cursor: not-allowed !important;
+  filter: grayscale(60%) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+button:disabled:hover,
+button[disabled]:hover {
+  opacity: 0.45 !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/* =========================================================
+   14) RESPONSIVE
+   ========================================================= */
 @media (max-width: 1100px) {
   .battle-arena {
     grid-template-columns: 1fr;
@@ -364,6 +664,15 @@ body {
     padding: 16px;
   }
 
+  .pokemon-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .pokemon-types {
+    text-align: left;
+  }
+
   .pokemon-name {
     font-size: 20px;
   }
@@ -372,137 +681,15 @@ body {
     width: 170px;
     height: 170px;
   }
-}
 
-.hp-block {
-  display: grid;
-  gap: 8px;
-  background: #f8fafc;
-  border-radius: 14px;
-  padding: 12px;
-}
+  .move-row,
+  .stat-row,
+  .battle-score-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 
-.hp-label-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 14px;
-}
-
-.hp-bar {
-  width: 100%;
-  height: 12px;
-  background: #dbe4f0;
-  border-radius: 999px;
-  overflow: hidden;
-}
-
-.hp-fill {
-  height: 100%;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #22c55e 0%, #84cc16 100%);
-  transition: width 0.3s ease;
-}
-
-.battle-log {
-  margin-top: 28px;
-  background: white;
-  border-radius: 24px;
-  padding: 20px;
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
-}
-
-.battle-log-content {
-  display: grid;
-  gap: 14px;
-}
-
-.battle-log-content h3 {
-  font-size: 22px;
-}
-
-.battle-log-list {
-  display: grid;
-  gap: 10px;
-}
-
-.battle-log-list p {
-  background: #f8fafc;
-  border-radius: 12px;
-  padding: 12px 14px;
-  color: #334155;
-  line-height: 1.4;
-}
-
-.next-turn-btn {
-  border: none;
-  border-radius: 12px;
-  padding: 12px 16px;
-  font-weight: 800;
-  cursor: pointer;
-  font-size: 15px;
-  transition: transform 0.15s ease, opacity 0.15s ease;
-  background: #f59e0b;
-  color: white;
-}
-
-.next-turn-btn:hover {
-  transform: translateY(-1px);
-  opacity: 0.95;
-}
-
-.battle-log {
-  margin-top: 28px;
-  background: white;
-  border-radius: 24px;
-  padding: 20px;
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
-}
-
-.battle-log-content {
-  display: grid;
-  gap: 14px;
-}
-
-.battle-log-content h3 {
-  font-size: 22px;
-}
-
-.battle-log-list {
-  display: grid;
-  gap: 10px;
-  max-height: 320px;
-  overflow-y: auto;
-}
-
-.battle-log-list p {
-  background: #f8fafc;
-  border-radius: 12px;
-  padding: 12px 14px;
-  color: #334155;
-  line-height: 1.4;
-}
-
-.battle-turn {
-  margin: 8px 0 14px;
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: #4a5568;
-}
-
-button:disabled,
-button[disabled] {
-  opacity: 0.45 !important;
-  cursor: not-allowed !important;
-  filter: grayscale(60%) !important;
-  box-shadow: none !important;
-  transform: none !important;
-}
-
-button:disabled:hover,
-button[disabled]:hover {
-  opacity: 0.45 !important;
-  cursor: not-allowed !important;
-  box-shadow: none !important;
-  transform: none !important;
+  .move-row small {
+    text-align: left;
+  }
 }

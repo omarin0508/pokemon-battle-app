@@ -1,16 +1,171 @@
 <!DOCTYPE html>
+<!-- =========================================================
+     ROOT INDEX - PROYECTO POKÉMON BATTLE APP
+     ---------------------------------------------------------
+     Este archivo funciona como menú principal del proyecto.
+
+     ¿Por qué se deja este archivo en la raíz?
+     - Sirve como punto de entrada general
+     - Organiza la navegación entre módulos
+     - Mejora la presentación del proyecto
+     - Permite que GitHub Pages abra una portada clara
+     - Evita entrar a archivos sueltos directamente
+
+     Además, este index ayuda a mostrar que el proyecto
+     está pensado como una app con flujo de uso y no solo
+     como carpetas separadas.
+
+     Flujo sugerido para el usuario:
+     Jugar -> Stage 1 -> Stage 2
+========================================================= -->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Web1 Proyecto 2 OM</title>
+  <title>Pokémon Battle App</title>
+
+  <style>
+    /* =========================================================
+       ESTILOS GENERALES
+       ---------------------------------------------------------
+       Se colocan aquí para que este archivo sea autónomo y no
+       dependa de los CSS internos de Stage 1 o Stage 2.
+    ========================================================= */
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(180deg, #111827 0%, #1f2937 100%);
+      color: #f3f4f6;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 640px;
+      background: rgba(31, 41, 55, 0.92);
+      border: 1px solid #374151;
+      border-radius: 20px;
+      padding: 32px 24px;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: 2rem;
+    }
+
+    .subtitle {
+      margin: 0 0 28px;
+      color: #d1d5db;
+      line-height: 1.6;
+    }
+
+    .menu {
+      display: grid;
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    a {
+      display: block;
+      text-decoration: none;
+      padding: 14px 16px;
+      border-radius: 12px;
+      font-weight: bold;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .play-link {
+      background: #22c55e;
+      color: #052e16;
+    }
+
+    .play-link:hover {
+      background: #16a34a;
+      transform: translateY(-2px);
+    }
+
+    .stage1-link {
+      background: #2563eb;
+      color: #ffffff;
+    }
+
+    .stage1-link:hover {
+      background: #1d4ed8;
+      transform: translateY(-2px);
+    }
+
+    .stage2-link {
+      background: #7c3aed;
+      color: #ffffff;
+    }
+
+    .stage2-link:hover {
+      background: #6d28d9;
+      transform: translateY(-2px);
+    }
+
+    .note {
+      margin-top: 24px;
+      font-size: 0.95rem;
+      color: #9ca3af;
+      line-height: 1.5;
+    }
+  </style>
 </head>
 <body>
-  <h1>Web1 Proyecto 2 OM</h1>
-  <p>Proyecto Pokémon en progreso.</p>
+  <!-- =========================================================
+       CONTENEDOR PRINCIPAL
+       ---------------------------------------------------------
+       Presenta el proyecto como una app con un menú central.
+  ========================================================= -->
+  <main class="container">
+    <h1>🧠 Pokémon Battle App</h1>
 
-  <a href="./stage-1/index.html">Ir a Stage 1</a>
-  <br />
-  <a href="./stage-2/index.html">Ir a Stage 2</a>
+    <p class="subtitle">
+      Proyecto 2 y 3 Programación Web 1 con flujo dividido en dos etapas:
+      selección del combate y batalla en tiempo real.
+    </p>
+
+    <!-- =========================================================
+         MENÚ PRINCIPAL
+         ---------------------------------------------------------
+         Opción 1: Jugar
+         - Lleva al flujo natural del proyecto
+         - Entra a Stage 1 porque ahí comienza la experiencia
+
+         Opción 2: Stage 1
+         - Acceso directo al módulo de selección
+
+         Opción 3: Stage 2
+         - Acceso directo al módulo de batalla
+    ========================================================= -->
+    <div class="menu">
+      <a class="play-link" href="./stage-1/index.html">🎮 Jugar</a>
+      <a class="stage1-link" href="./stage-1/index.html">🚀 Ir a Stage 1 — Selección</a>
+      <a class="stage2-link" href="./stage-2/index.html">⚔️ Ir a Stage 2 — Batalla</a>
+    </div>
+
+    <!-- =========================================================
+         NOTA EXPLICATIVA
+         ---------------------------------------------------------
+         Refuerza la intención de este archivo como portada
+         del proyecto y organizador de navegación.
+    ========================================================= -->
+    <p class="note">
+      Este archivo se mantiene como portada del proyecto para
+      ordenar la navegación, mejorar la presentación y servir
+      como punto de entrada.
+    </p>
+  </main>
 </body>
 </html>

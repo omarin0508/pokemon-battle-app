@@ -11,28 +11,28 @@
 - [x ] Live search with debounce
 - [x] AbortController for canceling previous search
 - [x] Fetch move details in parallel with Promise.all / Promise.allSettled
-- [ ] Type-based color theme
-- [ ] Better loading skeletons
-- [ ] “Go to Battle” button writes battle data to localStorage
-- [ ] Navigate to stage-2/index.html
+- [x] Type-based color theme
+- [x] Better loading skeletons
+- [x] “Go to Battle” button writes battle data to localStorage
+- [x] Navigate to stage-2/index.html
 
 ## Stage 2 — Real-Time Battle
-- [ ] Read battle data from localStorage
-- [ ] Render 3-cell arena
-- [ ] Player moves with arrow keys
-- [ ] Enemy attack loop with random timer
-- [ ] Warning cell before attack resolves
-- [ ] Lock movement during resolve
-- [ ] Hit/miss logic
-- [ ] Player regular move button with cooldown
-- [ ] Definitive move usable once
-- [ ] HP updates in real time
-- [ ] Battle log auto-scroll
-- [ ] End screen with win/lose message
-- [ ] Clear all timers on end
-- [ ] Battle Again without page reload
+- [x] Read battle data from localStorage
+- [x] Render 3-cell arena
+- [x] Player moves with arrow keys
+- [x] Enemy attack loop with random timer
+- [x] Warning cell before attack resolves
+- [x] Lock movement during resolve
+- [x] Hit/miss logic
+- [x] Player regular move button with cooldown
+- [x] Definitive move usable once
+- [x] HP updates in real time
+- [x] Battle log auto-scroll
+- [x] End screen with win/lose message
+- [x] Clear all timers on end
+- [x] Battle Again without page reload
 
 ## Docs
-- [ ] Update README for Stage 1
-- [ ] Update README for Stage 2
-- [ ] Add notes for type theme colors
+- [x] Update README for Stage 1
+- [x] Update README for Stage 2
+- [x] Add notes for type theme colors
