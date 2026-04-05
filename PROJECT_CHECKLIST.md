@@ -8,9 +8,9 @@
 - [x] Show stats, types, first 4 moves
 - [x] Save last opponent in localStorage
 - [x] Show inline error on invalid Pokémon
-- [ ] Live search with debounce
-- [ ] AbortController for canceling previous search
-- [ ] Fetch move details in parallel with Promise.all / Promise.allSettled
+- [x ] Live search with debounce
+- [x] AbortController for canceling previous search
+- [x] Fetch move details in parallel with Promise.all / Promise.allSettled
 - [ ] Type-based color theme
 - [ ] Better loading skeletons
 - [ ] “Go to Battle” button writes battle data to localStorage

@@ -1,16 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- =====================================================
+       CONFIGURACIÓN BÁSICA
+       - UTF-8 para caracteres especiales
+       - Responsive para móviles
+       - Título de la pestaña
+       - Hoja de estilos general
+       ===================================================== -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Pokémon Battle — Stage 1</title>
   <link rel="stylesheet" href="./style.css" />
 </head>
+
 <body>
+  <!-- =====================================================
+       CONTENEDOR PRINCIPAL DE LA APP (STAGE 1)
+       - Aquí vive toda la interfaz previa a la batalla
+       - Se usa para seleccionar el oponente
+       ===================================================== -->
   <main class="app">
+
+    <!-- =====================================================
+         PANEL DEL TRAINER
+         - Muestra la información del jugador
+         - Incluye el buscador de Pokémon oponente
+         ===================================================== -->
     <section class="trainer-panel">
+
+      <!-- Tarjeta del entrenador (se renderiza con JS) -->
       <div id="trainer-card"></div>
 
+      <!-- =====================================================
+           BUSCADOR DE POKÉMON OPONENTE
+           - Input para escribir nombre
+           - Botón para ejecutar búsqueda
+           ===================================================== -->
       <div class="search-box">
         <input
           type="text"
@@ -22,35 +48,86 @@
       </div>
     </section>
 
+    <!-- =====================================================
+         ARENA PREVIA A LA BATALLA
+         - Izquierda: Pokémon del jugador
+         - Derecha: Pokémon oponente
+         - Centro: acciones y estado
+         ===================================================== -->
     <section class="battle-arena">
+
+      <!-- Slot del Pokémon del jugador -->
       <div id="player-slot" class="battle-slot"></div>
 
+      <!-- =====================================================
+           CENTRO DE LA ARENA
+           - VS visual
+           - Botones de acción
+           - Resultado / estado previo a la batalla
+           ===================================================== -->
       <div class="battle-center">
+
+        <!-- Indicador visual VS -->
         <div class="vs-badge">VS</div>
 
+        <!-- =====================================================
+             BOTONES PRINCIPALES
+             - Go to Battle: pasa al Stage 2
+             - Reset: limpia selección actual
+             ===================================================== -->
         <div class="battle-actions">
-          <button id="fight-btn" class="fight-btn" type="button">Go to Battle</button>
-          <button id="reset-btn" class="reset-btn" type="button">Reset</button>
+          <button id="fight-btn" class="fight-btn" type="button">
+            Go to Battle
+          </button>
+
+          <button id="reset-btn" class="reset-btn" type="button">
+            Reset
+          </button>
         </div>
 
+        <!-- =====================================================
+             RESULTADO / MENSAJE
+             - Indica al usuario qué hacer
+             - Se actualiza dinámicamente con JS
+             ===================================================== -->
         <div id="battle-result" class="battle-result">
           <p>Choose an opponent and press Go to Battle.</p>
         </div>
       </div>
 
+      <!-- Slot del Pokémon oponente -->
       <div id="opponent-slot" class="battle-slot"></div>
     </section>
 
+    <!-- =====================================================
+         LOG PREVIO A LA BATALLA
+         - Muestra información antes de entrar a Stage 2
+         - Sirve como contexto de selección
+         ===================================================== -->
     <section id="battle-log" class="battle-log">
       <div class="battle-log-content">
         <h3>Battle Notes</h3>
+
         <div class="battle-log-list">
-          <p>Your selected Pokémon and opponent will be prepared here before entering Stage 2.</p>
+          <p>
+            Your selected Pokémon and opponent will be prepared here
+            before entering Stage 2.
+          </p>
         </div>
       </div>
     </section>
+
   </main>
 
+  <!-- =====================================================
+       SCRIPT PRINCIPAL (IMPORTANTE)
+       - Se usa type="module"
+       - Aquí vive toda la lógica del Stage 1
+       - Maneja:
+         * búsqueda de Pokémon
+         * selección
+         * navegación a Stage 2
+       ===================================================== -->
   <script type="module" src="./main.js"></script>
 </body>
 </html>
