@@ -1,3 +1,9 @@
+## 🎥 Video Explicativo
+
+Video de presentación de los proyectos 2 y 3 usando loom.!!
+
+👉 https://www.loom.com/share/7e7d59acafa2448d8d5fb96e2c609d54
+
 # 🧠 Pokémon Battle App — Stage 1 & Stage 2
 
 Aplicación web desarrollada como proyecto académico para simular una batalla tipo Pokémon en dos etapas:
